@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="560" viewBox="0 0 1080 560">
+  <g font-family="JetBrains Mono, monospace" font-size="22" fill="#9AA6AD">
+    <line x1="96" y1="484.0" x2="930" y2="484.0" stroke="#9AA6AD" stroke-opacity="0.16" stroke-width="1"/>
+    <text x="80" y="492.0" text-anchor="end" fill-opacity="0.7">15%</text>
+    <line x1="96" y1="362.9" x2="930" y2="362.9" stroke="#9AA6AD" stroke-opacity="0.16" stroke-width="1"/>
+    <text x="80" y="370.9" text-anchor="end" fill-opacity="0.7">25%</text>
+    <line x1="96" y1="241.7" x2="930" y2="241.7" stroke="#9AA6AD" stroke-opacity="0.16" stroke-width="1"/>
+    <text x="80" y="249.7" text-anchor="end" fill-opacity="0.7">35%</text>
+    <line x1="96" y1="120.6" x2="930" y2="120.6" stroke="#9AA6AD" stroke-opacity="0.16" stroke-width="1"/>
+    <text x="80" y="128.6" text-anchor="end" fill-opacity="0.7">45%</text>
+  </g>
+  <path d="M96.0,241.7 L114.1,247.8 L132.3,241.7 L150.4,241.7 L168.5,241.7 L186.7,241.7 L204.8,241.7 L222.9,241.7 L241.0,241.7 L259.2,241.7 L277.3,241.7 L295.4,241.7 L313.6,235.7 L331.7,235.7 L349.8,235.7 L368.0,223.5 L386.1,223.5 L404.2,223.5 L422.3,211.4 L440.5,211.4 L458.6,211.4 L476.7,211.4 L494.9,211.4 L513.0,211.4 L531.1,211.4 L549.3,211.4 L567.4,205.4 L585.5,205.4 L603.7,199.3 L621.8,199.3 L639.9,199.3 L658.0,199.3 L676.2,199.3 L694.3,205.4 L712.4,199.3 L730.6,205.4 L748.7,205.4 L766.8,199.3 L785.0,193.3 L803.1,199.3 L821.2,199.3 L839.3,199.3 L857.5,199.3 L875.6,199.3 L893.7,181.1 L911.9,181.1 L930.0,181.1" fill="none" stroke="#F8FAF8" stroke-opacity="0.92" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M96.0,393.7 L114.1,393.7 L132.3,393.7 L150.4,393.7 L168.5,393.7 L186.7,393.7 L204.8,393.7 L222.9,393.7 L241.0,393.7 L259.2,393.7 L277.3,393.7 L295.4,393.7 L313.6,393.7 L331.7,393.7 L349.8,393.7 L368.0,393.7 L386.1,393.7 L404.2,393.7 L422.3,393.7 L440.5,393.7 L458.6,393.7 L476.7,393.7 L494.9,393.7 L513.0,393.7 L531.1,393.7 L549.3,393.7 L567.4,393.7 L585.5,393.7 L603.7,373.3 L621.8,373.3 L639.9,373.3 L658.0,373.3 L676.2,373.3 L694.3,373.3 L712.4,393.7 L730.6,393.7 L748.7,393.7 L766.8,393.7 L785.0,393.7 L803.1,373.3 L821.2,393.7 L839.3,393.7 L857.5,393.7 L875.6,393.7 L893.7,393.7 L911.9,393.7 L930.0,393.7" fill="none" stroke="#34DFBA" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="930.0" cy="181.1" r="9" fill="#F8FAF8"/>
+  <circle cx="930.0" cy="393.7" r="9" fill="#34DFBA"/>
+  <g font-family="JetBrains Mono, monospace" font-size="26" font-weight="500">
+    <text x="948.0" y="190.1" fill="#F8FAF8">40%</text>
+    <text x="948.0" y="402.7" fill="#34DFBA">22%</text>
+  </g>
+  <line x1="904.0" y1="181.1" x2="904.0" y2="393.7" stroke="#147DFF" stroke-width="5" stroke-linecap="round"/>
+</svg>
