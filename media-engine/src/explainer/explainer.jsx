@@ -36,7 +36,14 @@ export default async ({ project }) => {
   const M = 80, CW = W - 2 * M;
   // Beat starts. Every node is windowed with at/duration so nothing from a past beat is still alive.
   const B1 = 3.4, B2 = 7.0, B3 = 11.6, B4 = 15.4, B5 = 18.2;
-  const beat = (a, b) => ({ at: a, duration: b - a });
+  // beat(START, END), both absolute times. It returns a duration because that is what higgsedit
+  // wants, and passing a duration in as the second argument produces a negative window that dies
+  // with "Cannot read properties of undefined (reading 'dur')" rather than anything readable.
+  const beat = (a, b) => {
+    const duration = b - a;
+    if (!(duration > 0)) throw new Error(`beat(${a}, ${b}) is not a window: end must be after start`);
+    return { at: a, duration };
+  };
   // The house fade: in over 0.35s, hold, out over the last 0.25s of the window.
   const fade = (len) => [{ property: 'opacity', keyframes: [
     { at: 0, value: 0 }, { at: 0.35, value: 1 }, { at: len - 0.25, value: 1 }, { at: len - 0.02, value: 0 },
@@ -158,7 +165,7 @@ export default async ({ project }) => {
     <rect name="ctafield" x={0} y={0} width={W} height={H} fill={NAVY}
       animate={[{ property: 'opacity', keyframes: [{ at: 0, value: 0 }, { at: B5 - 0.35, value: 0 }, { at: B5, value: 1, easing: 'house' }] }]} />,
     <group name="ctabull" x={(W - 200) / 2} y={620} width={200} height={200} origin="center"
-      {...beat(B5, life(B5))}
+      {...beat(B5, D)}
       animate={[
         { property: 'scale', keyframes: [{ at: 0, value: 0.84 }, { at: 0.4, value: 1.03, easing: 'house' }, { at: 0.62, value: 1 }] },
         { property: 'opacity', from: 0, to: 1, duration: 0.3 },
@@ -166,22 +173,22 @@ export default async ({ project }) => {
       <media file={bull} x={0} y={0} width={200} fit="width" />
     </group>,
     <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={54} fontWeight={700}
-      color={WHITE} lineHeight={1.2} {...beat(B5 + 0.2, life(B5 + 0.2))}
+      color={WHITE} lineHeight={1.2} {...beat(B5 + 0.2, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.35 }, { property: 'offsetY', from: 22, to: 0, duration: 0.5, easing: 'house' }]}>
       See today&apos;s markets
     </text>,
     <text x={M} y={1000} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={42} fontWeight={500}
-      color={MINT} {...beat(B5 + 0.35, life(B5 + 0.35))}
+      color={MINT} {...beat(B5 + 0.35, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.35 }]}>
       precisionalgorithms.com
     </text>,
     <row x={(W - 280) / 2} y={1090} width={280} padding={{ top: 14, bottom: 14, left: 24, right: 24 }}
-      radius={26} fill={MINT} justify="center" {...beat(B5 + 0.55, life(B5 + 0.55))}
+      radius={26} fill={MINT} justify="center" {...beat(B5 + 0.55, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.3 }]}>
       <text fontFamily="Inter" fontSize={28} fontWeight={700} color={NAVY}>Link in bio</text>
     </row>,
     <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18}
-      fontWeight={500} color={GREY} lineHeight={1.5} {...beat(B5 + 0.7, life(B5 + 0.7))}
+      fontWeight={500} color={GREY} lineHeight={1.5} {...beat(B5 + 0.7, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.4 }]}>
       {'Informational research. Precision does not place trades.\nModel estimates can be wrong. Prediction markets involve risk.\nKalshi and Polymarket named for market-source context; no affiliation implied.\nChart: 47 observations of one open contract, 31 Aug to 2 Sep 2026. No outcome is claimed.'}
     </text>,
