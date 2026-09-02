@@ -16,14 +16,19 @@
 import { readFileSync } from "node:fs";
 export default async ({ project }) => {
   const S = JSON.parse(readFileSync(process.env.SPEC, "utf8"));
-  const W=1080,H=1920,D=10,F=1/30, life=(a)=>D-a;
+  // Twelve seconds, not ten (Erick, 2 Sep: "gives users 2 more seconds to read and digest"). The two
+  // extra seconds are NOT spread evenly: they go where the reading load is. The figures card gains
+  // the most (+0.8s) because it carries three numbers and a question, the caps read gains +0.5s, the
+  // hook and the CTA gain +0.3 and +0.4. Both networks accept it: TikTok and Instagram Reels have a
+  // three-second floor and minutes of ceiling.
+  const W=1080,H=1920,D=12,F=1/30, life=(a)=>D-a;
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
   const NAVY="#05090D",MINT="#34DFBA",BLUE="#147DFF",WHITE="#F8FAF8",MUTE="#8BE8D9",GREY="#9AA6AD",CARD="#0A1B24";
   // Each figure sits on its own chip so the numbers cannot run together. ROW is one step up from
   // the card; GAPROW carries a blue tint so the focal number reads as the point of the card.
   const ROW="#0F2833",GAPROW="#10334A";
-  const M=80,CW=W-2*M, T1=2.5, T2=5.0, T3=7.6;
+  const M=80,CW=W-2*M, T1=2.8, T2=5.8, T3=9.2;
   // One sentence pair per line, joined with hard breaks: a wrapped footer once put a period at the
   // start of a line. The credit line is mandatory for CC BY / BY-SA plates (spec.credit).
   const legal = ["Informational research. Precision does not place trades.",
@@ -101,10 +106,12 @@ export default async ({ project }) => {
     </row>,
     <text x={M} y={1640} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+0.9} duration={life(T3+0.9)}
       animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{legal}</text>,
-    <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:9.4,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
+    <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-2.6,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
   ];
   p.compose(nodes,{at:0,dur:D,name:"tiktok-"+S.key});
-  await p.frame(1.5,`renders/pa-tiktok-${S.key}-1.png`); await p.frame(3.8,`renders/pa-tiktok-${S.key}-2.png`);
-  await p.frame(6.3,`renders/pa-tiktok-${S.key}-3.png`); await p.frame(8.8,`renders/pa-tiktok-${S.key}-4.png`);
+  // One still per beat, taken mid-beat so no still lands on a fade. These are the TikTok photo-mode
+  // slides and the poster, so they have to be frames a reader would stop on.
+  await p.frame(1.6,`renders/pa-tiktok-${S.key}-1.png`); await p.frame(4.2,`renders/pa-tiktok-${S.key}-2.png`);
+  await p.frame(7.4,`renders/pa-tiktok-${S.key}-3.png`); await p.frame(10.6,`renders/pa-tiktok-${S.key}-4.png`);
   await p.render(`renders/pa-tiktok-${S.key}.mp4`);
 };
