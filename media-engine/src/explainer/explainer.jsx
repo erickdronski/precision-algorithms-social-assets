@@ -85,22 +85,22 @@ export default async ({ project }) => {
     <row x={(W - 600) / 2} y={1020} width={600} padding={{ top: 16, bottom: 16, left: 26, right: 26 }}
       radius={30} fill={MINT} justify="center" {...beat(0.9, B1)} animate={riseFade(B1 - 0.9, 20)}>
       <text fontFamily="JetBrains Mono" fontSize={25} fontWeight={500} letterSpacing={4} color={NAVY}>
-        INDEPENDENT PROBABILITY RESEARCH
+        ML FOR PREDICTION MARKETS
       </text>
     </row>,
     <text x={M} y={1140} width={CW} align="center" fontFamily="Inter" fontSize={48} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(1.25, B1)} animate={riseFade(B1 - 1.25, 24)}>
-      {'The board has a price.\nWe run our own number.'}
+      {'A machine learning model\nfor Kalshi and Polymarket'}
     </text>,
 
     // ── Beat 1: what a prediction market is ─────────────────────────────────────────────────────
     <text x={M} y={700} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B1, B2)} animate={riseFade(B2 - B1, 28)}>
-      {'Prediction markets put a price\non what happens next'}
+      {'Kalshi and Polymarket put\na price on what happens next'}
     </text>,
     <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
       color={MUTE} lineHeight={1.4} {...beat(B1 + 0.35, B2)} animate={riseFade(B2 - B1 - 0.35, 22)}>
-      Traders move that price all day, on two of the venues we cover
+      {'That price is what traders think,\nwritten as a percent'}
     </text>,
     <row x={(W - 720) / 2} y={1090} width={720} gap={64} justify="center" align="center"
       {...beat(B1 + 0.75, B2)} animate={riseFade(B2 - B1 - 0.75, 18)}>
@@ -111,7 +111,7 @@ export default async ({ project }) => {
     // ── Beat 2: the model, and the chart drawing itself ─────────────────────────────────────────
     <text x={M} y={600} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B2, B3)} animate={riseFade(B3 - B2, 28)}>
-      {'We score the same question\nwith our own model'}
+      {'We run a machine learning model\non the same question'}
     </text>,
     // The chart is revealed left to right by a mask, the same mechanism the banner uses to pencil in
     // its connector. Declared mask width starts at zero and animates to full: a mask declared at zero
@@ -127,18 +127,18 @@ export default async ({ project }) => {
     </group>,
     <row x={(W - 660) / 2} y={1420} width={660} gap={44} justify="center" align="center"
       {...beat(B2 + 1.6, B3)} animate={riseFade(B3 - B2 - 1.6, 16)}>
-      <text fontFamily="JetBrains Mono" fontSize={26} fontWeight={500} letterSpacing={3} color={WHITE}>THE BOARD</text>
+      <text fontFamily="JetBrains Mono" fontSize={26} fontWeight={500} letterSpacing={3} color={WHITE}>THEIR PRICE</text>
       <text fontFamily="JetBrains Mono" fontSize={26} fontWeight={500} letterSpacing={3} color={MINT}>OUR MODEL</text>
     </row>,
 
     // ── Beat 3: reading the chart ───────────────────────────────────────────────────────────────
     <text x={M} y={640} width={CW} align="center" fontFamily="Inter" fontSize={56} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B3, B4)} animate={riseFade(B4 - B3, 26)}>
-      {S.moveWords}
+      {'When the two disagree,\nwe publish the difference'}
     </text>,
     <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={44} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(B3 + 0.3, B4)} animate={riseFade(B4 - B3 - 0.3, 22)}>
-      Our number did not move at all
+      {S.gapPoints + ' points apart, right now'}
     </text>,
     <column name="gapcard" x={(W - 760) / 2} y={1020} width={760} radius={30} fill={CARD}
       padding={{ top: 36, bottom: 36, left: 38, right: 38 }} gap={18}
@@ -152,18 +152,18 @@ export default async ({ project }) => {
         <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={MINT}>{S.modelLast + '%'}</text>
       </row>
       <text width={684} align="center" fontFamily="Inter" fontSize={30} fontWeight={700} color={BLUE}>
-        That distance is the Model Gap
+        {'That distance is the edge we publish'}
       </text>
     </column>,
 
     // ── Beat 4: what we are not ─────────────────────────────────────────────────────────────────
     <text x={M} y={700} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.22} {...beat(B4, B5)} animate={riseFade(B5 - B4, 26)}>
-      {'We publish the difference.\nWe do not place trades'}
+      {'We publish the number.\nWe do not place trades'}
     </text>,
     <text x={M} y={950} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
       color={MUTE} lineHeight={1.4} {...beat(B4 + 0.35, B5)} animate={riseFade(B5 - B4 - 0.35, 20)}>
-      No broker, no positions, no tips. A model estimate beside the market price, every day
+      {'No broker. No positions. No tips.\nA model estimate beside the market price'}
     </text>,
 
     // ── Beat 5: the CTA ─────────────────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ export default async ({ project }) => {
     <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={54} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B5 + 0.2, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.35 }, { property: 'offsetY', from: 22, to: 0, duration: 0.5, easing: 'house' }]}>
-      See today&apos;s markets
+      {'Every market, every day'}
     </text>,
     <text x={M} y={1000} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={42} fontWeight={500}
       color={MINT} {...beat(B5 + 0.35, D)}
