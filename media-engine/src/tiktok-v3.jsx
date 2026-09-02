@@ -21,8 +21,12 @@ export default async ({ project }) => {
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
   const NAVY="#05090D",MINT="#34DFBA",BLUE="#147DFF",WHITE="#F8FAF8",MUTE="#8BE8D9",GREY="#9AA6AD",CARD="#0A1B24";
   const M=80,CW=W-2*M, T1=2.5, T2=5.0, T3=7.6;
-  const legal = "Informational research. Precision does not place trades. Model estimates can be wrong. Prediction markets involve risk. " +
-                S.venue + " named for market-source context; no affiliation implied." + (S.credit ? " Photo: " + S.credit + "." : "");
+  // One sentence pair per line, joined with hard breaks: a wrapped footer once put a period at the
+  // start of a line. The credit line is mandatory for CC BY / BY-SA plates (spec.credit).
+  const legal = ["Informational research. Precision does not place trades.",
+                 "Model estimates can be wrong. Prediction markets involve risk.",
+                 S.venue + " named for market-source context; no affiliation implied."]
+                 .concat(S.credit ? ["Photo: " + S.credit + "."] : []).join("\n");
   const nodes=[
     <group name="plate" x={0} y={0} width={W} height={H} origin="center"
       animate={[{property:"scale",keyframes:[{at:0,value:1.0},{at:T3,value:1.12,easing:"linear"}]},{property:"offsetX",keyframes:[{at:0,value:0},{at:T3,value:-50,easing:"linear"}]}]}>
