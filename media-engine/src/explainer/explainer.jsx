@@ -160,7 +160,7 @@ export default async ({ project }) => {
     </text>,
     <text x={M} y={840} width={CW} align="center" fontFamily="Satoshi" fontSize={44} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(B3 + 0.3, B4)} animate={riseFade(B4 - B3 - 0.3, 22)}>
-      {S.gapPoints + ' points apart, right now'}
+      {S.gapPoints + ' points apart on ' + S.asOf}
     </text>,
     <column name="gapcard" x={(W - 760) / 2} y={1020} width={760} radius={30} fill={CARD}
       padding={{ top: 36, bottom: 36, left: 38, right: 38 }} gap={18}
