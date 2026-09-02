@@ -53,7 +53,7 @@ export default async ({ project }) => {
     { property: 'offsetY', from: dy, to: 0, duration: 0.5, easing: 'house' },
   ];
 
-  const CHART_W = 920, CHART_H = Math.round((CHART_W * 560) / 1080);
+  const CHART_W = 1000, CHART_H = Math.round((CHART_W * 620) / 1080);
 
   const nodes = [
     // A single field for the whole clip. No photograph: this is the house's own surface, and a
@@ -65,53 +65,53 @@ export default async ({ project }) => {
     // ── Beat 0: the cover ───────────────────────────────────────────────────────────────────────
     // Held longer than a normal beat because it is also the thumbnail. The bull settles rather than
     // bounces: a pinned cover that jitters looks cheap on a second viewing.
-    <group name="coverbull" x={(W - 300) / 2} y={470} width={300} height={300} origin="center"
+    <group name="coverbull" x={(W - 360) / 2} y={430} width={360} height={360} origin="center"
       {...beat(0.15, B1)}
       animate={[
         { property: 'scale', keyframes: [{ at: 0, value: 0.86 }, { at: 0.55, value: 1.02, easing: 'house' }, { at: 0.85, value: 1 }] },
         { property: 'opacity', keyframes: [{ at: 0, value: 0 }, { at: 0.4, value: 1 }, { at: B1 - 0.15 - 0.02, value: 0 }] },
       ]}>
-      <media file={bull} x={0} y={0} width={300} fit="width" />
+      <media file={bull} x={0} y={0} width={360} fit="width" />
     </group>,
-    <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={78} fontWeight={700}
+    <text x={M} y={880} width={CW} align="center" fontFamily="Inter" fontSize={82} fontWeight={700}
       color={WHITE} lineHeight={1.1} {...beat(0.5, B1)} animate={riseFade(B1 - 0.5, 30)}>
       Precision Algorithms
     </text>,
-    <row x={(W - 560) / 2} y={968} width={560} padding={{ top: 16, bottom: 16, left: 26, right: 26 }}
+    <row x={(W - 600) / 2} y={1020} width={600} padding={{ top: 16, bottom: 16, left: 26, right: 26 }}
       radius={30} fill={MINT} justify="center" {...beat(0.9, B1)} animate={riseFade(B1 - 0.9, 20)}>
       <text fontFamily="JetBrains Mono" fontSize={25} fontWeight={500} letterSpacing={4} color={NAVY}>
         INDEPENDENT PROBABILITY RESEARCH
       </text>
     </row>,
-    <text x={M} y={1080} width={CW} align="center" fontFamily="Inter" fontSize={46} fontWeight={500}
+    <text x={M} y={1140} width={CW} align="center" fontFamily="Inter" fontSize={48} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(1.25, B1)} animate={riseFade(B1 - 1.25, 24)}>
       {'The board has a price.\nWe run our own number.'}
     </text>,
 
     // ── Beat 1: what a prediction market is ─────────────────────────────────────────────────────
-    <text x={M} y={640} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
+    <text x={M} y={700} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B1, B2)} animate={riseFade(B2 - B1, 28)}>
       {'Prediction markets put a price\non what happens next'}
     </text>,
-    <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
+    <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
       color={MUTE} lineHeight={1.4} {...beat(B1 + 0.35, B2)} animate={riseFade(B2 - B1 - 0.35, 22)}>
       Traders move that price all day, on two of the venues we cover
     </text>,
-    <row x={(W - 720) / 2} y={1020} width={720} gap={64} justify="center" align="center"
+    <row x={(W - 720) / 2} y={1090} width={720} gap={64} justify="center" align="center"
       {...beat(B1 + 0.75, B2)} animate={riseFade(B2 - B1 - 0.75, 18)}>
       <media file={kalshi} width={260} fit="width" />
       <media file={poly} width={300} fit="width" />
     </row>,
 
     // ── Beat 2: the model, and the chart drawing itself ─────────────────────────────────────────
-    <text x={M} y={520} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
+    <text x={M} y={600} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B2, B3)} animate={riseFade(B3 - B2, 28)}>
       {'We score the same question\nwith our own model'}
     </text>,
     // The chart is revealed left to right by a mask, the same mechanism the banner uses to pencil in
     // its connector. Declared mask width starts at zero and animates to full: a mask declared at zero
     // width is refused, so the rectangle is declared at full size and the ANIMATED value starts at 0.
-    <group name="chart" x={(W - CHART_W) / 2} y={760} width={CHART_W} height={CHART_H}
+    <group name="chart" x={(W - CHART_W) / 2} y={830} width={CHART_W} height={CHART_H}
       mask={{ shape: 'rectangle', x: 0, y: 0, width: CHART_W, height: CHART_H }}
       {...beat(B2 + 0.3, B3)}
       animate={[
@@ -120,33 +120,33 @@ export default async ({ project }) => {
       ]}>
       <media file={chart} x={0} y={0} width={CHART_W} fit="width" />
     </group>,
-    <row x={(W - 660) / 2} y={1300} width={660} gap={44} justify="center" align="center"
+    <row x={(W - 660) / 2} y={1420} width={660} gap={44} justify="center" align="center"
       {...beat(B2 + 1.6, B3)} animate={riseFade(B3 - B2 - 1.6, 16)}>
       <text fontFamily="JetBrains Mono" fontSize={26} fontWeight={500} letterSpacing={3} color={WHITE}>THE BOARD</text>
       <text fontFamily="JetBrains Mono" fontSize={26} fontWeight={500} letterSpacing={3} color={MINT}>OUR MODEL</text>
     </row>,
 
     // ── Beat 3: reading the chart ───────────────────────────────────────────────────────────────
-    <text x={M} y={560} width={CW} align="center" fontFamily="Inter" fontSize={56} fontWeight={700}
+    <text x={M} y={640} width={CW} align="center" fontFamily="Inter" fontSize={56} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B3, B4)} animate={riseFade(B4 - B3, 26)}>
       {'Over three days the board\nwalked five points'}
     </text>,
-    <text x={M} y={760} width={CW} align="center" fontFamily="Inter" fontSize={44} fontWeight={500}
+    <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={44} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(B3 + 0.3, B4)} animate={riseFade(B4 - B3 - 0.3, 22)}>
       Our number did not move at all
     </text>,
-    <column name="gapcard" x={(W - 720) / 2} y={960} width={720} radius={28} fill={CARD}
-      padding={{ top: 34, bottom: 34, left: 36, right: 36 }} gap={18}
+    <column name="gapcard" x={(W - 760) / 2} y={1020} width={760} radius={30} fill={CARD}
+      padding={{ top: 36, bottom: 36, left: 38, right: 38 }} gap={18}
       {...beat(B3 + 0.7, B4)} animate={riseFade(B4 - B3 - 0.7, 26)}>
-      <row width={648} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
+      <row width={684} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
         <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>POLYMARKET</text>
         <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={WHITE}>40%</text>
       </row>
-      <row width={648} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
+      <row width={684} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
         <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={MINT}>PRECISION</text>
         <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={MINT}>22%</text>
       </row>
-      <text width={648} align="center" fontFamily="Inter" fontSize={30} fontWeight={700} color={BLUE}>
+      <text width={684} align="center" fontFamily="Inter" fontSize={30} fontWeight={700} color={BLUE}>
         That distance is the Model Gap
       </text>
     </column>,
