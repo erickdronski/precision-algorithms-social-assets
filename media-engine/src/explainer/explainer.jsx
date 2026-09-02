@@ -21,8 +21,8 @@
 // scored against an outcome, which is exactly why that contract was chosen. See build-chart.mjs.
 //
 //   higgsedit build explainer.jsx    (project dir needs src/bull.png, src/kalshi.png,
-//                                     src/polymarket.png, src/chart.png and Inter 700/500 +
-//                                     JetBrains Mono 500 vendored)
+//                                     src/polymarket.png, src/chart.png and General Sans 700, Satoshi 500 and
+//                                     JetBrains Mono 500 registered, see brand/fonts in the assets repo)
 import { readFileSync } from 'node:fs';
 
 export default async ({ project }) => {
@@ -70,35 +70,57 @@ export default async ({ project }) => {
     // ── Beat 0: the cover ───────────────────────────────────────────────────────────────────────
     // Held longer than a normal beat because it is also the thumbnail. The bull settles rather than
     // bounces: a pinned cover that jitters looks cheap on a second viewing.
-    <group name="coverbull" x={(W - 360) / 2} y={430} width={360} height={360} origin="center"
+    //
+    // This frame is designed for the TikTok PROFILE GRID, where it appears as a tile roughly 150px
+    // wide, which is 0.139 of the frame. At that scale the old cover said nothing: the wordmark at
+    // 82px rendered 11px tall, the mint pill's 25px mono rendered 3.5px and read as a solid green
+    // bar, and the body copy at 48px was gone entirely. Erick, 2 September: "The cover slide to our
+    // pinned video should show 'Who we are' as the title under precision algorithms so a user can
+    // quickly see what the video is about."
+    //
+    // He is right about more than the words. The profile page already prints the account name and
+    // this same bull as the avatar directly above the grid, so the cover does not have to answer
+    // "who is this". It has to answer "what is THIS video", and "Who we are" at 124px is the only
+    // string in the frame that survives the tile. The wordmark drops to 56px, which also takes it
+    // off the wrap ceiling it was sitting on: 20 characters against a budget of exactly 20.
+    // The mint pill is gone. It said the same thing as the line under it, and it cost the frame its
+    // only piece of semantic colour: mint means the model estimate (AGENTS.md), and a mint slab
+    // behind a slogan spends that meaning on decoration. The bull is the frame's mint now.
+    <group name="coverbull" x={(W - 340) / 2 - 27} y={498} width={340} height={340} origin="center"
       {...beat(0.15, B1)}
       animate={[
         { property: 'scale', keyframes: [{ at: 0, value: 0.86 }, { at: 0.55, value: 1.02, easing: 'house' }, { at: 0.85, value: 1 }] },
-        { property: 'opacity', keyframes: [{ at: 0, value: 0 }, { at: 0.4, value: 1 }, { at: B1 - 0.15 - 0.02, value: 0 }] },
+        // The old keyframes ramped 1 -> 0 with no hold, so opacity fell from the instant it arrived
+        // and the mark sat at 42% at the cover grab, which is why it is a ghost in the render Erick
+        // saw. fade() holds full opacity across the beat and drops only at the end, the same shape
+        // every other element here uses.
+        ...fade(B1 - 0.15),
       ]}>
-      <media file={bull} x={0} y={0} width={360} fit="width" />
+      <media file={bull} x={0} y={0} width={340} fit="width" />
     </group>,
-    <text x={M} y={880} width={CW} align="center" fontFamily="Inter" fontSize={82} fontWeight={700}
-      color={WHITE} lineHeight={1.1} {...beat(0.5, B1)} animate={riseFade(B1 - 0.5, 30)}>
+    // x is nudged 27px left of centre on purpose. The mark's ink is not centred in its own PNG:
+    // measured on brand/logo-v2026/assets/precision-bull-primary.png, the alpha above half spans
+    // x 254-933 of 1024, so its optical centre sits at 0.5796 of the box, which is 27px right of
+    // box centre at 340px. Without the nudge the bull leans right of a centred wordmark.
+    <text x={M} y={875} width={CW} align="center" fontFamily="General Sans" fontSize={56} fontWeight={700}
+      color={WHITE} lineHeight={1.1} {...beat(0.55, B1)} animate={riseFade(B1 - 0.55, 26)}>
       Precision Algorithms
     </text>,
-    <row x={(W - 600) / 2} y={1020} width={600} padding={{ top: 16, bottom: 16, left: 26, right: 26 }}
-      radius={30} fill={MINT} justify="center" {...beat(0.9, B1)} animate={riseFade(B1 - 0.9, 20)}>
-      <text fontFamily="JetBrains Mono" fontSize={25} fontWeight={500} letterSpacing={4} color={NAVY}>
-        ML FOR PREDICTION MARKETS
-      </text>
-    </row>,
-    <text x={M} y={1140} width={CW} align="center" fontFamily="Inter" fontSize={48} fontWeight={500}
-      color={MUTE} lineHeight={1.35} {...beat(1.25, B1)} animate={riseFade(B1 - 1.25, 24)}>
+    <text x={M} y={972} width={CW} align="center" fontFamily="General Sans" fontSize={124} fontWeight={700}
+      color={WHITE} lineHeight={1.05} {...beat(0.95, B1)} animate={riseFade(B1 - 0.95, 30)}>
+      Who we are
+    </text>,
+    <text x={M} y={1155} width={CW} align="center" fontFamily="Satoshi" fontSize={48} fontWeight={500}
+      color={MUTE} lineHeight={1.35} {...beat(1.3, B1)} animate={riseFade(B1 - 1.3, 24)}>
       {'A machine learning model\nfor Kalshi and Polymarket'}
     </text>,
 
     // ── Beat 1: what a prediction market is ─────────────────────────────────────────────────────
-    <text x={M} y={700} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
+    <text x={M} y={700} width={CW} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B1, B2)} animate={riseFade(B2 - B1, 28)}>
       {'Kalshi and Polymarket put\na price on what happens next'}
     </text>,
-    <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
+    <text x={M} y={900} width={CW} align="center" fontFamily="Satoshi" fontSize={38} fontWeight={500}
       color={MUTE} lineHeight={1.4} {...beat(B1 + 0.35, B2)} animate={riseFade(B2 - B1 - 0.35, 22)}>
       {'That price is what traders think,\nwritten as a percent'}
     </text>,
@@ -109,7 +131,7 @@ export default async ({ project }) => {
     </row>,
 
     // ── Beat 2: the model, and the chart drawing itself ─────────────────────────────────────────
-    <text x={M} y={600} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
+    <text x={M} y={600} width={CW} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B2, B3)} animate={riseFade(B3 - B2, 28)}>
       {'We run a machine learning\nmodel on the same question'}
     </text>,
@@ -132,11 +154,11 @@ export default async ({ project }) => {
     </row>,
 
     // ── Beat 3: reading the chart ───────────────────────────────────────────────────────────────
-    <text x={M} y={640} width={CW} align="center" fontFamily="Inter" fontSize={56} fontWeight={700}
+    <text x={M} y={640} width={CW} align="center" fontFamily="General Sans" fontSize={56} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B3, B4)} animate={riseFade(B4 - B3, 26)}>
       {'When the two disagree,\nwe publish the difference'}
     </text>,
-    <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={44} fontWeight={500}
+    <text x={M} y={840} width={CW} align="center" fontFamily="Satoshi" fontSize={44} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(B3 + 0.3, B4)} animate={riseFade(B4 - B3 - 0.3, 22)}>
       {S.gapPoints + ' points apart, right now'}
     </text>,
@@ -151,17 +173,17 @@ export default async ({ project }) => {
         <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={MINT}>PRECISION</text>
         <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={MINT}>{S.modelLast + '%'}</text>
       </row>
-      <text width={684} align="center" fontFamily="Inter" fontSize={30} fontWeight={700} color={BLUE}>
+      <text width={684} align="center" fontFamily="General Sans" fontSize={30} fontWeight={700} color={BLUE}>
         {'That distance is the edge we publish'}
       </text>
     </column>,
 
     // ── Beat 4: what we are not ─────────────────────────────────────────────────────────────────
-    <text x={M} y={700} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
+    <text x={M} y={700} width={CW} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.22} {...beat(B4, B5)} animate={riseFade(B5 - B4, 26)}>
       {'We publish the number.\nWe do not place trades'}
     </text>,
-    <text x={M} y={950} width={CW} align="center" fontFamily="Inter" fontSize={38} fontWeight={500}
+    <text x={M} y={950} width={CW} align="center" fontFamily="Satoshi" fontSize={38} fontWeight={500}
       color={MUTE} lineHeight={1.4} {...beat(B4 + 0.35, B5)} animate={riseFade(B5 - B4 - 0.35, 20)}>
       {'No broker. No positions. No tips.\nA model estimate beside the market price'}
     </text>,
@@ -177,10 +199,10 @@ export default async ({ project }) => {
       ]}>
       <media file={bull} x={0} y={0} width={200} fit="width" />
     </group>,
-    <text x={M} y={900} width={CW} align="center" fontFamily="Inter" fontSize={54} fontWeight={700}
+    <text x={M} y={900} width={CW} align="center" fontFamily="General Sans" fontSize={54} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B5 + 0.2, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.35 }, { property: 'offsetY', from: 22, to: 0, duration: 0.5, easing: 'house' }]}>
-      {'Every market, every day'}
+      {'Five free previews a day'}
     </text>,
     <text x={M} y={1000} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={42} fontWeight={500}
       color={MINT} {...beat(B5 + 0.35, D)}
@@ -190,7 +212,7 @@ export default async ({ project }) => {
     <row x={(W - 280) / 2} y={1090} width={280} padding={{ top: 14, bottom: 14, left: 24, right: 24 }}
       radius={26} fill={MINT} justify="center" {...beat(B5 + 0.55, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.3 }]}>
-      <text fontFamily="Inter" fontSize={28} fontWeight={700} color={NAVY}>Link in bio</text>
+      <text fontFamily="General Sans" fontSize={28} fontWeight={700} color={NAVY}>Link in bio</text>
     </row>,
     <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18}
       fontWeight={500} color={GREY} lineHeight={1.5} {...beat(B5 + 0.7, D)}
