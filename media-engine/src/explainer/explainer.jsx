@@ -20,16 +20,16 @@
 // ledger, drawn by source/build-chart.mjs. It settles 31 December 2026, so nothing here can be
 // scored against an outcome, which is exactly why that contract was chosen. See build-chart.mjs.
 //
-//   higgsedit build explainer.jsx    (project dir needs src/bull.png, src/kalshi.svg,
-//                                     src/polymarket.svg, src/chart.svg and Inter 700/500 +
+//   higgsedit build explainer.jsx    (project dir needs src/bull.png, src/kalshi.png,
+//                                     src/polymarket.png, src/chart.png and Inter 700/500 +
 //                                     JetBrains Mono 500 vendored)
 export default async ({ project }) => {
   const W = 1080, H = 1920, D = 20, F = 1 / 30, life = (a) => D - a;
   const p = await project({ dir: '.', size: `${W}x${H}`, fps: 30, background: '#05090D' });
   const bull = await p.add('src/bull.png');
-  const kalshi = await p.add('src/kalshi.svg');
-  const poly = await p.add('src/polymarket.svg');
-  const chart = await p.add('src/chart.svg');
+  const kalshi = await p.add('src/kalshi.png');
+  const poly = await p.add('src/polymarket.png');
+  const chart = await p.add('src/chart.png');
 
   const NAVY = '#05090D', MINT = '#34DFBA', BLUE = '#147DFF', WHITE = '#F8FAF8';
   const MUTE = '#8BE8D9', GREY = '#9AA6AD', CARD = '#0A1B24', ROW = '#0F2833';
@@ -198,7 +198,10 @@ export default async ({ project }) => {
       animate={[{ property: 'opacity', keyframes: [{ at: 0, value: 0 }, { at: D - 0.6, value: 0 }, { at: D - F, value: 1, easing: 'house' }] }]} />,
   ];
 
-  await p.compose(nodes);
+  // compose() takes the duration explicitly: `compose(): dur must be a positive number of seconds`.
+  // Omitting it dies as "Cannot read properties of undefined (reading 'dur')", which reads like a
+  // broken node tree and is not.
+  await p.compose(nodes, { dur: D });
   await p.render('renders/pa-explainer.mp4');
   // The cover is frame one of the hold, not a transition frame: it is the pinned thumbnail.
   await p.frame(2.2, 'renders/pa-explainer-cover.png');
