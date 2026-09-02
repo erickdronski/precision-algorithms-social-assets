@@ -23,7 +23,12 @@
 //   higgsedit build explainer.jsx    (project dir needs src/bull.png, src/kalshi.png,
 //                                     src/polymarket.png, src/chart.png and Inter 700/500 +
 //                                     JetBrains Mono 500 vendored)
+import { readFileSync } from 'node:fs';
+
 export default async ({ project }) => {
+  // Every figure on screen comes from assets/explainer-spec.json, written by source/build-chart.mjs
+  // out of the same observations the chart is drawn from. Nothing here is typed by hand.
+  const S = JSON.parse(readFileSync(process.env.SPEC || 'explainer-spec.json', 'utf8'));
   const W = 1080, H = 1920, D = 20, F = 1 / 30, life = (a) => D - a;
   const p = await project({ dir: '.', size: `${W}x${H}`, fps: 30, background: '#05090D' });
   const bull = await p.add('src/bull.png');
@@ -129,7 +134,7 @@ export default async ({ project }) => {
     // ── Beat 3: reading the chart ───────────────────────────────────────────────────────────────
     <text x={M} y={640} width={CW} align="center" fontFamily="Inter" fontSize={56} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B3, B4)} animate={riseFade(B4 - B3, 26)}>
-      {'Over three days the board\nwalked five points'}
+      {S.moveWords}
     </text>,
     <text x={M} y={840} width={CW} align="center" fontFamily="Inter" fontSize={44} fontWeight={500}
       color={MUTE} lineHeight={1.35} {...beat(B3 + 0.3, B4)} animate={riseFade(B4 - B3 - 0.3, 22)}>
@@ -139,12 +144,12 @@ export default async ({ project }) => {
       padding={{ top: 36, bottom: 36, left: 38, right: 38 }} gap={18}
       {...beat(B3 + 0.7, B4)} animate={riseFade(B4 - B3 - 0.7, 26)}>
       <row width={684} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
-        <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>POLYMARKET</text>
-        <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={WHITE}>40%</text>
+        <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{S.venueLabel.toUpperCase()}</text>
+        <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={WHITE}>{S.venueLast + '%'}</text>
       </row>
       <row width={684} radius={18} fill={ROW} padding={{ top: 18, bottom: 18, left: 24, right: 24 }} justify="space-between" align="center">
         <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={MINT}>PRECISION</text>
-        <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={MINT}>22%</text>
+        <text fontFamily="JetBrains Mono" fontSize={56} fontWeight={500} color={MINT}>{S.modelLast + '%'}</text>
       </row>
       <text width={684} align="center" fontFamily="Inter" fontSize={30} fontWeight={700} color={BLUE}>
         That distance is the Model Gap
@@ -190,7 +195,7 @@ export default async ({ project }) => {
     <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18}
       fontWeight={500} color={GREY} lineHeight={1.5} {...beat(B5 + 0.7, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.4 }]}>
-      {'Informational research. Precision does not place trades.\nModel estimates can be wrong. Prediction markets involve risk.\nKalshi and Polymarket named for market-source context; no affiliation implied.\nChart: 47 observations of one open contract, 31 Aug to 2 Sep 2026. No outcome is claimed.'}
+      {'Informational research. Precision does not place trades.\nModel estimates can be wrong. Prediction markets involve risk.\nKalshi and Polymarket named for market-source context; no affiliation implied.\n' + Chart: 47 observations of one open contract, 31 Aug to 2 Sep 2026. No outcome is claimed.'}
     </text>,
 
     // Loops back to the cover field so a replay does not flash.
