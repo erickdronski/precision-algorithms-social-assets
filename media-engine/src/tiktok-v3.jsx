@@ -20,6 +20,9 @@ export default async ({ project }) => {
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
   const NAVY="#05090D",MINT="#34DFBA",BLUE="#147DFF",WHITE="#F8FAF8",MUTE="#8BE8D9",GREY="#9AA6AD",CARD="#0A1B24";
+  // Each figure sits on its own chip so the numbers cannot run together. ROW is one step up from
+  // the card; GAPROW carries a blue tint so the focal number reads as the point of the card.
+  const ROW="#0F2833",GAPROW="#10334A";
   const M=80,CW=W-2*M, T1=2.5, T2=5.0, T3=7.6;
   // One sentence pair per line, joined with hard breaks: a wrapped footer once put a period at the
   // start of a line. The credit line is mandatory for CC BY / BY-SA plates (spec.credit).
@@ -55,16 +58,33 @@ export default async ({ project }) => {
     <text x={M} y={1260} width={CW} fontFamily="Inter" fontSize={72} fontWeight={700} color={WHITE} lineHeight={1.08} at={T1+0.15} duration={T2-T1-0.15}
       motion={{by:"word",from:{y:34,opacity:0},overlap:0.6,duration:0.55,easing:"house"}}
       animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{S.read.replace(/[.!]$/,"").toUpperCase()}</text>,
-    <column name="card" x={M} y={620} width={CW} radius={28} fill={CARD} padding={{top:40,bottom:36,left:40,right:40}} gap={26} at={T2} duration={T3-T2}
+    // The figures card, rebuilt 2 Sep 2026 after Erick read the first reels on a phone: "too much
+    // numbers and data too close to one another". The three figures used to sit in one row across a
+    // 840px card, so 61.0% / 77.5% / +16.5 ran together into a single band of digits and the small
+    // caps label above each one was reading as a header for the whole row rather than for its own
+    // number. Now each figure is its own full-width chip: the label on the left in small caps, the
+    // number hard right, one per line, with real space between them. The Model Gap chip is bigger,
+    // tinted and carries a top rule, because the house rule is that the signed gap is the focal
+    // number on any market creative.
+    <column name="card" x={M} y={470} width={CW} radius={32} fill={CARD} padding={{top:44,bottom:40,left:40,right:40}} gap={30} at={T2} duration={T3-T2}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.4,value:1},{at:T3-T2-0.3,value:1},{at:T3-T2-0.02,value:0}]},{property:"offsetY",from:30,to:0,duration:0.5,easing:"house"}]}>
       <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={4} color={MUTE}>{S.venue.toUpperCase()+" VS. PRECISION · PA SIDE "+S.side}</text>
-      <text width={CW-80} fontFamily="Inter" fontSize={40} fontWeight={700} color={WHITE} lineHeight={1.15}>{S.q}</text>
-      <row width={CW-80} gap={24} align="start" justify="space-between">
-        <column gap={8}><text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={3} color={GREY}>{S.venue.toUpperCase()+" "+S.side}</text><text fontFamily="JetBrains Mono" fontSize={88} fontWeight={500} color={WHITE}>{S.mp+"%"}</text></column>
-        <column gap={8}><text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={3} color={MINT}>{"PRECISION "+S.side}</text><text fontFamily="JetBrains Mono" fontSize={88} fontWeight={500} color={MINT}>{S.pp+"%"}</text></column>
-        <column gap={8}><text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={3} color={GREY}>MODEL GAP</text><text fontFamily="JetBrains Mono" fontSize={88} fontWeight={500} color={BLUE}>{"+"+S.gap}</text></column>
-      </row>
-      <text width={CW-80} fontFamily="Inter" fontSize={26} fontWeight={500} color={MUTE}>{S.yesParty ? "YES = "+S.yesParty+" win." : "The side Precision reads higher than the venue."}</text>
+      <text width={CW-80} fontFamily="Inter" fontSize={44} fontWeight={700} color={WHITE} lineHeight={1.18}>{S.q}</text>
+      <column width={CW-80} gap={14}>
+        <row width={CW-80} radius={18} fill={ROW} padding={{top:20,bottom:20,left:26,right:26}} justify="space-between" align="center">
+          <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{S.venue.toUpperCase()+" "+S.side}</text>
+          <text fontFamily="JetBrains Mono" fontSize={62} fontWeight={500} color={WHITE}>{S.mp+"%"}</text>
+        </row>
+        <row width={CW-80} radius={18} fill={ROW} padding={{top:20,bottom:20,left:26,right:26}} justify="space-between" align="center">
+          <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={MINT}>{"PRECISION "+S.side}</text>
+          <text fontFamily="JetBrains Mono" fontSize={62} fontWeight={500} color={MINT}>{S.pp+"%"}</text>
+        </row>
+        <row width={CW-80} radius={18} fill={GAPROW} padding={{top:26,bottom:26,left:26,right:26}} justify="space-between" align="center">
+          <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={BLUE}>MODEL GAP</text>
+          <text fontFamily="JetBrains Mono" fontSize={80} fontWeight={500} color={BLUE}>{"+"+S.gap}</text>
+        </row>
+      </column>
+      <text width={CW-80} fontFamily="Inter" fontSize={27} fontWeight={500} color={MUTE} lineHeight={1.35}>{S.yesParty ? "YES = "+S.yesParty+" win." : "Precision reads this side higher than the venue does. The gap is in probability points, not a return."}</text>
     </column>,
     <rect name="ctafield" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:T3-0.35,value:0},{at:T3,value:1,easing:"house"}]}]} />,
     <group name="ctabull" x={(W-220)/2} y={520} width={220} height={220} origin="center" at={T3} duration={life(T3)}
