@@ -111,7 +111,7 @@ export default async ({ project }) => {
     // ── Beat 2: the model, and the chart drawing itself ─────────────────────────────────────────
     <text x={M} y={600} width={CW} align="center" fontFamily="Inter" fontSize={58} fontWeight={700}
       color={WHITE} lineHeight={1.2} {...beat(B2, B3)} animate={riseFade(B3 - B2, 28)}>
-      {'We run a machine learning model\non the same question'}
+      {'We run a machine learning\nmodel on the same question'}
     </text>,
     // The chart is revealed left to right by a mask, the same mechanism the banner uses to pencil in
     // its connector. Declared mask width starts at zero and animates to full: a mask declared at zero
