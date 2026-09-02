@@ -195,7 +195,7 @@ export default async ({ project }) => {
     <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18}
       fontWeight={500} color={GREY} lineHeight={1.5} {...beat(B5 + 0.7, D)}
       animate={[{ property: 'opacity', from: 0, to: 1, duration: 0.4 }]}>
-      {'Informational research. Precision does not place trades.\nModel estimates can be wrong. Prediction markets involve risk.\nKalshi and Polymarket named for market-source context; no affiliation implied.\n' + Chart: 47 observations of one open contract, 31 Aug to 2 Sep 2026. No outcome is claimed.'}
+      {'Informational research. Precision does not place trades.\nModel estimates can be wrong. Prediction markets involve risk.\nKalshi and Polymarket named for market-source context; no affiliation implied.\n' + S.legalChart}
     </text>,
 
     // Loops back to the cover field so a replay does not flash.
