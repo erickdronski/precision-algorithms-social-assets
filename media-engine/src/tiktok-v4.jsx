@@ -147,6 +147,31 @@ export default async ({ project }) => {
   const SAFE_TOP=200, SAFE_BOT=1580, SAFE_L=130, SAFE_R=950;
   const BAND_MID=(SAFE_TOP+SAFE_BOT)/2;   // 890, against a frame centre of 960
   const M=SAFE_L, CW=SAFE_R-SAFE_L, T1=2.8, T2=5.8, T3=9.2;
+  // A CHILD WIDER THAN ITS CONTAINER SILENTLY CANCELS ITS OWN PADDING.
+  //
+  // Erick, twice: "the category sports is sitting directly on the edge of the border, doesn't look
+  // good, needs breathing room", and then, after I "fixed" it: "the category on the first tile in
+  // the top right hand corner is still too close to the edge/border."
+  //
+  // He was right both times, and the second time is the interesting one. The bubble is CW wide (820)
+  // and the row carrying the venue chip and the category was written as W-220 (860). Forty pixels
+  // wider than the thing it sits in. With justify="space-between" the category is placed at
+  // rowWidth minus right padding, so 860-40 = 820, which is EXACTLY the bubble's right edge. The
+  // padding I raised from 34 to 40 bought nothing at all: the overflow ate every pixel of it.
+  //
+  // That is why this is a guard and not a bigger number. Raising the padding on a row that overflows
+  // its container is indistinguishable from doing nothing, and it looks like a fix in the diff. A
+  // width that cannot fit its parent should fail the build, not quietly produce a label on a border.
+  const fitsInside = (childW, parentW, what) => {
+    if (childW > parentW) {
+      throw new Error(
+        `${what} is ${childW}px inside a ${parentW}px container. A child wider than its parent is ` +
+        'positioned against the parent\'s edge, so its own padding buys nothing and the content on ' +
+        'that side sits on the border. Narrow the child to the container.',
+      );
+    }
+    return childW;
+  };
   // The second beat is fitted to the band rather than set at a fixed size: at 60px a long read
   // ran past the band it was composed for and into the gradient below it. readForReel picks the
   // largest headline size that still lands inside the band, shedding WHOLE trailing sentences
@@ -241,7 +266,7 @@ export default async ({ project }) => {
     </row> : null,
     <column name="bubble" x={SAFE_L} y={BAND_MID-250} width={CW} radius={28} fill={CARD} at={0.35} duration={T1-0.35}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.35,value:1},{at:T1-0.35-0.3,value:1},{at:T1-0.35-0.02,value:0}]},{property:"offsetY",from:28,to:0,duration:0.5,easing:"house"}]}>
-      <row width={W-220} padding={{top:30,bottom:14,left:40,right:40}} justify="space-between" align="center">
+      <row width={fitsInside(CW, CW, "bubble header row")} padding={{top:30,bottom:16,left:40,right:44}} justify="space-between" align="center">
         {venueChip(30,"vchip-hook")}
         <text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={4} color={MUTE}>{String(S.cat||"").toUpperCase()}</text>
       </row>
@@ -251,7 +276,7 @@ export default async ({ project }) => {
             is the Model Gap before a single number has appeared. They do not slide all the way
             together and they never touch: a lockup that closes reads as a partnership, which is
             the one thing the footer spends four lines denying. */}
-        <row width={W-300} gap={20} align="center" justify="center"
+        <row width={fitsInside(CW-80, CW-76, "hook venue row")} gap={20} align="center" justify="center"
           animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.9,value:0},{at:1.25,value:1}]}]}>
           {venueChip(26,"vchip-vs",[{property:"offsetX",keyframes:[{at:0,value:-40},{at:0.9,value:-40},{at:1.35,value:0,easing:"house"}]}])}
           <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>VS</text>
