@@ -61,6 +61,54 @@ export default async ({ project }) => {
   // tested. Both networks take it. TikTok and Reels have a three-second floor and a ceiling in
   // minutes, and a fourteen-second loop still repeats often enough to hold a scroller.
   const W=1080,H=1920,D=14,F=1/30, life=(a)=>D-a;
+  // NO WORD, AND NO PUNCTUATION MARK, ENDS UP ALONE ON A LINE.
+  //
+  // Erick, 3 September, on the live reels: "see how the question mark sits on its own row? I told
+  // you i have orphans/tailing where there is a single word or punctuation on its own line, doesn't
+  // look good... Rangers is also on its own line... people will easily call this out as AI slop."
+  //
+  // He had already told me, and I had already built check-lines.mjs for it, and it still shipped.
+  // The reason is worth writing down: that checker measures STATIC strings and reports how many
+  // nodes "carry computed text and were not measured". Here that count is fifteen, and the market
+  // question is one of them, because it arrives as {S.q} at render time. The guard was clean on
+  // exactly the text that was breaking, which is worse than no guard: it produced confidence.
+  //
+  // The deeper cause is the wrap itself. Every renderer fills a line to the budget and starts a new
+  // one, which packs the early lines and dumps the remainder on the last, so a 33-character
+  // question in a 30-character box becomes "Tampa Bay Rays vs. Texas" and then "Rangers?" alone.
+  // Greedy wrapping does not have an orphan bug; orphans are what greedy wrapping IS. So the fix is
+  // to choose the line count first and spread the words evenly across it: a balanced rag.
+  //
+  // This lives inside the composition rather than in the spec writer on purpose. It is the layout's
+  // job, so it holds for every spec, including ones written by hand. It is a copy of
+  // social-assets/lib/pipeline/balance-lines.mjs, which carries the tests.
+  const fit = (t, box, size, mono=false, ls=0) => {
+    const budget = Math.floor(box / (size * (mono ? 0.6 : 0.55) + ls));
+    const words = String(t ?? "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+    if (words.length < 2) return words.join(" ");
+    const pack = (w) => words.reduce((ls2, word) => {
+      const next = ls2.length ? ls2[ls2.length-1] + " " + word : word;
+      if (ls2.length && next.length <= w) ls2[ls2.length-1] = next; else ls2.push(word);
+      return ls2;
+    }, []);
+    // Binary search the narrowest width that still fits in n lines: that is the balanced rag.
+    const into = (n) => {
+      let lo = Math.max(...words.map((w) => w.length)), hi = budget, best = null;
+      while (lo <= hi) { const mid = (lo+hi)>>1; const r = pack(mid); if (r.length <= n) { best = r; hi = mid-1; } else lo = mid+1; }
+      return best ?? pack(budget);
+    };
+    // Alone on the last line: one short word, or nothing but punctuation.
+    const bad = (l) => l.length > 1 && ((l[l.length-1].split(" ").length === 1 && l[l.length-1].length <= 14) || /^[^\w]+$/.test(l[l.length-1]));
+    let lines = into(pack(budget).length);
+    if (bad(lines)) { const wider = into(pack(budget).length + 1); if (!bad(wider)) lines = wider; }
+    // Last resort: pull a word down from the line above, which always cures a lone-word ending.
+    if (bad(lines) && lines.length >= 2) {
+      const above = lines[lines.length-2].split(" ");
+      if (above.length >= 2) { const moved = above.pop(); lines[lines.length-2] = above.join(" "); lines[lines.length-1] = moved + " " + lines[lines.length-1]; }
+    }
+    return lines.join("\n");
+  };
+
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
   const kalshi=await p.add("src/kalshi.png"), poly=await p.add("src/polymarket.png");
@@ -200,12 +248,12 @@ export default async ({ project }) => {
     </row> : null,
     <column name="bubble" x={SAFE_L} y={BAND_MID-250} width={CW} radius={28} fill={CARD} at={0.35} duration={T1-0.35}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.35,value:1},{at:T1-0.35-0.3,value:1},{at:T1-0.35-0.02,value:0}]},{property:"offsetY",from:28,to:0,duration:0.5,easing:"house"}]}>
-      <row width={W-220} padding={{top:26,bottom:8,left:30,right:34}} justify="space-between" align="center">
+      <row width={W-220} padding={{top:30,bottom:14,left:40,right:40}} justify="space-between" align="center">
         {venueChip(30,"vchip-hook")}
         <text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={4} color={MUTE}>{String(S.cat||"").toUpperCase()}</text>
       </row>
-      <column padding={{top:22,bottom:34,left:40,right:40}} gap={26}>
-        <text width={CW-80} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700} color={WHITE} lineHeight={1.15}>{S.q}</text>
+      <column padding={{top:26,bottom:40,left:38,right:38}} gap={30}>
+        <text width={CW-80} align="center" fontFamily="General Sans" fontSize={54} fontWeight={700} color={WHITE} lineHeight={1.22}>{fit(S.q, CW-80, 54)}</text>
         {/* The thesis, staged. Two chips of equal weight stop with air between them, and that air
             is the Model Gap before a single number has appeared. They do not slide all the way
             together and they never touch: a lockup that closes reads as a partnership, which is
@@ -227,9 +275,9 @@ export default async ({ project }) => {
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T2-T1-0.3,value:1},{at:T2-T1-0.02,value:0}]},{property:"offsetX",from:-24,to:0,duration:0.4,easing:"house"}]}>
       {venueChip(30,"vchip-read-inner")}
     </group>,
-    <text x={M} y={BAND_MID-150} width={CW} fontFamily="General Sans" fontSize={60} fontWeight={700} color={WHITE} lineHeight={1.08} at={T1+0.15} duration={T2-T1-0.15}
+    <text x={M+16} y={BAND_MID-150} width={CW-32} fontFamily="General Sans" fontSize={56} fontWeight={700} color={WHITE} lineHeight={1.24} at={T1+0.15} duration={T2-T1-0.15}
       motion={{by:"word",from:{y:34,opacity:0},overlap:0.6,duration:0.55,easing:"house"}}
-      animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{S.read.replace(/[.!]$/,"").toUpperCase()}</text>,
+      animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{fit(S.read.replace(/[.!]$/,"").toUpperCase(), CW-32, 56)}</text>,
 
     // ── Beat 3: the figures ─────────────────────────────────────────────────────────────────────
     // Rebuilt 2 Sep after Erick read the first reels on a phone: "too much numbers and data too
@@ -248,7 +296,7 @@ export default async ({ project }) => {
         {venueChip(26,"vchip-card")}
         <text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={3} color={MUTE}>{"PA SIDE "+S.side}</text>
       </row>
-      <text width={CW-80} fontFamily="General Sans" fontSize={44} fontWeight={700} color={WHITE} lineHeight={1.18}>{S.q}</text>
+      <text width={CW-80} fontFamily="General Sans" fontSize={42} fontWeight={700} color={WHITE} lineHeight={1.26}>{fit(S.q, CW-80, 42)}</text>
       <column width={CW-80} gap={14}>
         <row width={CW-80} radius={18} fill={ROW} padding={{top:20,bottom:20,left:26,right:26}} justify="space-between" align="center">
           {/* A WORDMARK already says the venue's name, so printing it again beside the artwork reads
@@ -257,7 +305,7 @@ export default async ({ project }) => {
               so its row keeps the word. The asymmetry is the venues' own. */}
           <row gap={14} align="center">
             <media file={V.mark} width={V.wordmark?86:26} fit="width" />
-            <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{V.wordmark ? S.side : S.venue.toUpperCase()+" "+S.side}</text>
+            <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{/* one-token */ V.wordmark ? S.side : S.venue.toUpperCase()+" "+S.side}</text>
           </row>
           <text fontFamily="JetBrains Mono" fontSize={62} fontWeight={500} color={WHITE}>{S.mp+"%"}</text>
         </row>
@@ -273,7 +321,7 @@ export default async ({ project }) => {
           <text fontFamily="JetBrains Mono" fontSize={80} fontWeight={500} color={BLUE}>{"+"+S.gap}</text>
         </row>
       </column>
-      <text width={CW-80} fontFamily="Satoshi" fontSize={27} fontWeight={500} color={MUTE} lineHeight={1.35}>{S.yesParty ? "YES = "+S.yesParty+" win." : "Precision reads this side higher than the venue does. The gap is in probability points, not a return."}</text>
+      <text width={CW-80} fontFamily="Satoshi" fontSize={27} fontWeight={500} color={MUTE} lineHeight={1.35}>{fit(S.yesParty ? "YES = "+S.yesParty+" win." : "Precision reads this side higher than the venue does. The gap is in probability points, not a return.", CW-80, 27)}</text>
     </column>,
 
     // ── Beat 4: the ask ─────────────────────────────────────────────────────────────────────────
@@ -283,7 +331,7 @@ export default async ({ project }) => {
       <media file={bull} x={0} y={0} width={220} fit="width" />
     </group>,
     <text x={SAFE_L} y={BAND_MID-105} width={CW} align="center" fontFamily="General Sans" fontSize={62} fontWeight={700} color={WHITE} lineHeight={1.12} at={T3+0.25} duration={life(T3+0.25)}
-      motion={{by:"word",from:{y:30,opacity:0},overlap:0.6,duration:0.5,easing:"house"}}>{'Five free previews\na day'}</text>,
+      motion={{by:"word",from:{y:30,opacity:0},overlap:0.6,duration:0.5,easing:"house"}}>{fit('Five free previews a day', CW, 62)}</text>,
     <text x={SAFE_L} y={BAND_MID+55} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={44} fontWeight={500} letterSpacing={1} color={MINT} at={T3+0.55} duration={life(T3+0.55)}
       animate={[{property:"opacity",from:0,to:1,duration:0.4,easing:"house"},{property:"offsetY",from:14,to:0,duration:0.4,easing:"house"}]}>precisionalgorithms.com</text>,
     <row x={(W-300)/2} y={BAND_MID+165} width={300} padding={{top:16,bottom:16,left:26,right:26}} fill={MINT} radius={36} justify="center" at={T3+0.8} duration={life(T3+0.8)}
@@ -307,7 +355,7 @@ export default async ({ project }) => {
       </row>
     </column>,
     <text x={M} y={BAND_MID+485} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={17} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+1.15} duration={life(T3+1.15)}
-      animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{legal}</text>,
+      animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{fit(legal, CW, 20, true, 0)}</text>,
     <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-1.1,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
   ];
   p.compose(nodes,{at:0,dur:D,name:"tiktok-"+S.key});

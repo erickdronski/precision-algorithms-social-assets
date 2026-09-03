@@ -1,0 +1,16 @@
+{
+  "key": "redsox-first-inning",
+  "plate": "plates/v44/hero-redsox.jpg",
+  "cat": "SPORTS",
+  "venue": "Polymarket",
+  "q": "Will there be a run scored in the first inning?: Boston Red Sox vs. Baltimore Orioles?",
+  "side": "NO",
+  "mp": "53.5",
+  "pp": "71.6",
+  "gap": "18.1",
+  "read": "A first inning run is close to a coin flip on the board. The desk model leans harder toward no run at 71.6.",
+  "badge": "CURRENT MARKET · SPORTS",
+  "observed": "SEP 3 2026, 12:22 PM ET",
+  "credit": "Melikamp, CC BY-SA 3.0",
+  "md": "live-exchange-independent-v1+pm-base-rate-gbm-20260612222041+pm-universal-outcome-v1-20260721175211"
+}
