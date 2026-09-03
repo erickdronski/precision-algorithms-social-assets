@@ -85,6 +85,16 @@ export default async ({ project }) => {
 
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
+  // fit="cover" does NOT fill this frame. A 2272x1704 plate rendered as a narrow vertical strip
+  // with flat navy either side of it: the picture Erick asked to be STRONGER was instead mostly
+  // absent. So compute the cover box explicitly from the plate's own dimensions, which the handle
+  // carries, and centre it. This holds for a plate of any shape, portrait or landscape.
+  const cover = (m, w, h) => {
+    const s = Math.max(w / m.width, h / m.height);
+    const cw = Math.round(m.width * s), ch = Math.round(m.height * s);
+    return { x: Math.round((w - cw) / 2), y: Math.round((h - ch) / 2), w: cw, h: ch };
+  };
+  const PL = cover(plate, W, H);
   const kalshi=await p.add("src/kalshi.png"), poly=await p.add("src/polymarket.png");
   const NAVY="#05090D",MINT="#34DFBA",BLUE="#147DFF",WHITE="#F8FAF8",MUTE="#8BE8D9",GREY="#9AA6AD",CARD="#0A1B24";
   // Each figure sits on its own chip so the numbers cannot run together. ROW is one step up from
@@ -142,6 +152,10 @@ export default async ({ project }) => {
   // largest headline size that still lands inside the band, shedding WHOLE trailing sentences
   // from the desk's own read when it has to. The card below still carries the read in full.
   const RD = readForReel(S.read, CW-32, { sizes:[60,56,52,48], maxLines:5 });
+  // Centre the block on the band instead of hanging it from a fixed top. A fixed top means the
+  // block grows DOWNWARD as the sentence gets longer, which is how a long read ended up sitting on
+  // the gradient edge; centred, a block of any height stays in the middle of the space it has.
+  RD.y = Math.round(BAND_MID - (RD.lines.length * RD.size * 1.3) / 2);
 
   // The venue's identity, matching the still card's chip exactly. Kalshi ships a WORDMARK (the
   // glyph and the letters are one asset), so its chip carries the artwork alone; Polymarket ships
@@ -190,7 +204,7 @@ export default async ({ project }) => {
   const nodes=[
     <group name="plate" x={0} y={0} width={W} height={H} origin="center"
       animate={[{property:"scale",keyframes:[{at:0,value:1.0},{at:T3,value:1.12,easing:"linear"}]},{property:"offsetX",keyframes:[{at:0,value:0},{at:T3,value:-50,easing:"linear"}]}]}>
-      <media file={plate} x={0} y={0} width={W} height={H} fit="cover" />
+      <media file={plate} x={PL.x} y={PL.y} width={PL.w} height={PL.h} />
     </group>,
     <rect x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0.38},{at:T3,value:0.38}]}]} />,
     <rect x={0} y={H*0.55} width={W} height={H*0.45} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:T1,value:0},{at:T1+0.4,value:0.5}]}]} />,
@@ -254,7 +268,7 @@ export default async ({ project }) => {
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T2-T1-0.3,value:1},{at:T2-T1-0.02,value:0}]},{property:"offsetX",from:-24,to:0,duration:0.4,easing:"house"}]}>
       {venueChip(30,"vchip-read-inner")}
     </group>,
-    <text x={M+16} y={BAND_MID-150} width={CW-32} fontFamily="General Sans" fontSize={RD.size} fontWeight={700} color={WHITE} lineHeight={1.3} at={T1+0.15} duration={T2-T1-0.15}
+    <text x={M+16} y={RD.y} width={CW-32} fontFamily="General Sans" fontSize={RD.size} fontWeight={700} color={WHITE} lineHeight={1.3} at={T1+0.15} duration={T2-T1-0.15}
       motion={{by:"word",from:{y:34,opacity:0},overlap:0.6,duration:0.55,easing:"house"}}
       animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{RD.lines.join("\n")}</text>,
 
