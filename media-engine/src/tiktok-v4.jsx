@@ -57,7 +57,26 @@ export default async ({ project }) => {
   // Each figure sits on its own chip so the numbers cannot run together. ROW is one step up from
   // the card; GAPROW carries a blue tint so the focal number reads as the point of the card.
   const ROW="#0F2833",GAPROW="#10334A";
-  const M=80,CW=W-2*M, T1=2.8, T2=5.8, T3=9.2;
+  // THE PLATFORM'S CHROME IS PART OF THE CANVAS.
+  //
+  // Erick, 3 September, on an Instagram reel: "the text on the second slide is actually overlapped
+  // by the caption and profile name in the bottom left hand corner." He is right, and the frame was
+  // built as if the 1080x1920 rectangle were all ours. It is not:
+  //
+  //   bottom ~470px   caption, @handle, the audio ticker, the progress bar
+  //   right  ~180px   the like / comment / share / sound rail
+  //   top    ~200px   status bar, back arrow, "Search this image"
+  //
+  // Anything drawn there is either covered or fighting for attention with the app's own UI. So the
+  // composition now has a real safe box and everything lives inside it. SAFE_BOT at 1450 is the
+  // load-bearing number: the beat-2 read used to start at y=1270 and run three lines of 72px past
+  // 1500, straight under the caption.
+  //
+  // The content is also CENTRED in that box rather than hung from the top, which is what Erick
+  // asked for and what the format wants: on a phone held at arm's length the eye rests at the
+  // middle of the screen, not the top third.
+  const SAFE_TOP=200, SAFE_BOT=1450, SAFE_L=80, SAFE_R=900;
+  const M=SAFE_L, CW=SAFE_R-SAFE_L, T1=2.8, T2=5.8, T3=9.2;
 
   // The venue's identity, matching the still card's chip exactly. Kalshi ships a WORDMARK (the
   // glyph and the letters are one asset), so its chip carries the artwork alone; Polymarket ships
@@ -121,14 +140,14 @@ export default async ({ project }) => {
     // question ("which category?") nobody scrolling has. The chip answers the one they do have:
     // is this a real market, on a venue I have heard of? The category survives at the right edge in
     // small mono, which is where a deck line belongs.
-    <column name="bubble" x={110} y={640} width={W-220} radius={28} fill={CARD} at={0.35} duration={T1-0.35}
+    <column name="bubble" x={SAFE_L} y={620} width={CW} radius={28} fill={CARD} at={0.35} duration={T1-0.35}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.35,value:1},{at:T1-0.35-0.3,value:1},{at:T1-0.35-0.02,value:0}]},{property:"offsetY",from:28,to:0,duration:0.5,easing:"house"}]}>
       <row width={W-220} padding={{top:26,bottom:8,left:30,right:34}} justify="space-between" align="center">
         {venueChip(30,"vchip-hook")}
         <text fontFamily="JetBrains Mono" fontSize={22} fontWeight={500} letterSpacing={4} color={MUTE}>{String(S.cat||"").toUpperCase()}</text>
       </row>
       <column padding={{top:22,bottom:34,left:40,right:40}} gap={26}>
-        <text width={W-300} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700} color={WHITE} lineHeight={1.15}>{S.q}</text>
+        <text width={CW-80} align="center" fontFamily="General Sans" fontSize={58} fontWeight={700} color={WHITE} lineHeight={1.15}>{S.q}</text>
         {/* The thesis, staged. Two chips of equal weight stop with air between them, and that air
             is the Model Gap before a single number has appeared. They do not slide all the way
             together and they never touch: a lockup that closes reads as a partnership, which is
@@ -146,11 +165,11 @@ export default async ({ project }) => {
     // The venue chip persists here at the same size and position it held in the bubble's header, so
     // it reads as one continuous object across the cut rather than a new element per beat. That is
     // the difference between a motion graphic and a slideshow.
-    <group name="vchip-read" x={M} y={1176} width={360} height={74} at={T1} duration={T2-T1}
+    <group name="vchip-read" x={M} y={660} width={360} height={74} at={T1} duration={T2-T1}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T2-T1-0.3,value:1},{at:T2-T1-0.02,value:0}]},{property:"offsetX",from:-24,to:0,duration:0.4,easing:"house"}]}>
       {venueChip(30,"vchip-read-inner")}
     </group>,
-    <text x={M} y={1270} width={CW} fontFamily="General Sans" fontSize={72} fontWeight={700} color={WHITE} lineHeight={1.08} at={T1+0.15} duration={T2-T1-0.15}
+    <text x={M} y={770} width={CW} fontFamily="General Sans" fontSize={64} fontWeight={700} color={WHITE} lineHeight={1.08} at={T1+0.15} duration={T2-T1-0.15}
       motion={{by:"word",from:{y:34,opacity:0},overlap:0.6,duration:0.55,easing:"house"}}
       animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{S.read.replace(/[.!]$/,"").toUpperCase()}</text>,
 
@@ -201,15 +220,15 @@ export default async ({ project }) => {
 
     // ── Beat 4: the ask ─────────────────────────────────────────────────────────────────────────
     <rect name="ctafield" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:T3-0.35,value:0},{at:T3,value:1,easing:"house"}]}]} />,
-    <group name="ctabull" x={(W-220)/2} y={500} width={220} height={220} origin="center" at={T3} duration={life(T3)}
+    <group name="ctabull" x={(W-220)/2} y={430} width={220} height={220} origin="center" at={T3} duration={life(T3)}
       animate={[{property:"scale",keyframes:[{at:0,value:0.82},{at:0.45,value:1.04,easing:"house"},{at:0.7,value:1}]},{property:"opacity",from:0,to:1,duration:0.3}]}>
       <media file={bull} x={0} y={0} width={220} fit="width" />
     </group>,
-    <text x={80} y={790} width={W-160} align="center" fontFamily="General Sans" fontSize={62} fontWeight={700} color={WHITE} lineHeight={1.12} at={T3+0.25} duration={life(T3+0.25)}
-      motion={{by:"word",from:{y:30,opacity:0},overlap:0.6,duration:0.5,easing:"house"}}>Five free previews a day</text>,
-    <text x={80} y={950} width={W-160} align="center" fontFamily="JetBrains Mono" fontSize={44} fontWeight={500} letterSpacing={1} color={MINT} at={T3+0.55} duration={life(T3+0.55)}
+    <text x={SAFE_L} y={720} width={CW} align="center" fontFamily="General Sans" fontSize={62} fontWeight={700} color={WHITE} lineHeight={1.12} at={T3+0.25} duration={life(T3+0.25)}
+      motion={{by:"word",from:{y:30,opacity:0},overlap:0.6,duration:0.5,easing:"house"}}>{'Five free previews\na day'}</text>,
+    <text x={SAFE_L} y={880} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={44} fontWeight={500} letterSpacing={1} color={MINT} at={T3+0.55} duration={life(T3+0.55)}
       animate={[{property:"opacity",from:0,to:1,duration:0.4,easing:"house"},{property:"offsetY",from:14,to:0,duration:0.4,easing:"house"}]}>precisionalgorithms.com</text>,
-    <row x={(W-300)/2} y={1060} width={300} padding={{top:16,bottom:16,left:26,right:26}} fill={MINT} radius={36} justify="center" at={T3+0.8} duration={life(T3+0.8)}
+    <row x={(W-300)/2} y={990} width={300} padding={{top:16,bottom:16,left:26,right:26}} fill={MINT} radius={36} justify="center" at={T3+0.8} duration={life(T3+0.8)}
       animate={[{property:"opacity",from:0,to:1,duration:0.35,easing:"house"},{property:"offsetY",from:14,to:0,duration:0.4,easing:"house"}]}>
       <text fontFamily="General Sans" fontSize={30} fontWeight={700} color={NAVY}>Link in bio</text>
     </row>,
@@ -217,7 +236,7 @@ export default async ({ project }) => {
     // line the still card prints in its header ("SELECTED KALSHI AND POLYMARKET MARKETS"), and it
     // is here because a viewer deciding whether to follow wants to know the beat we cover, not the
     // single market they happened to land on.
-    <column x={M} y={1230} width={CW} gap={18} align="center" at={T3+1.0} duration={life(T3+1.0)}
+    <column x={M} y={1120} width={CW} gap={18} align="center" at={T3+1.0} duration={life(T3+1.0)}
       animate={[{property:"opacity",from:0,to:1,duration:0.45,easing:"house"}]}>
       <text width={CW} align="center" fontFamily="JetBrains Mono" fontSize={20} fontWeight={500} letterSpacing={3} color={GREY}>WE PRICE SELECTED MARKETS ON</text>
       <row width={CW} gap={30} align="center" justify="center">
@@ -229,7 +248,7 @@ export default async ({ project }) => {
         </row>
       </row>
     </column>,
-    <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+1.15} duration={life(T3+1.15)}
+    <text x={M} y={1310} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={17} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+1.15} duration={life(T3+1.15)}
       animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{legal}</text>,
     <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-1.1,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
   ];
