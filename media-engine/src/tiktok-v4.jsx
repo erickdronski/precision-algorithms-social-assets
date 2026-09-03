@@ -129,7 +129,7 @@ export default async ({ project }) => {
     </group>,
     <rect x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0.38},{at:T3,value:0.38}]}]} />,
     <rect x={0} y={H*0.55} width={W} height={H*0.45} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:T1,value:0},{at:T1+0.4,value:0.5}]}]} />,
-    <row x={M} y={120} width={520} gap={14} align="center" animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>
+    <row x={M} y={SAFE_TOP+15} width={520} gap={14} align="center" animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>
       <media file={bull} width={52} fit="width" />
       <text fontFamily="General Sans" fontSize={30} fontWeight={700} color={WHITE}>Precision Algorithms</text>
     </row>,
