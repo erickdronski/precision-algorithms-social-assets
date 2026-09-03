@@ -174,9 +174,13 @@ export default async ({ project }) => {
       <text width={CW-80} fontFamily="General Sans" fontSize={44} fontWeight={700} color={WHITE} lineHeight={1.18}>{S.q}</text>
       <column width={CW-80} gap={14}>
         <row width={CW-80} radius={18} fill={ROW} padding={{top:20,bottom:20,left:26,right:26}} justify="space-between" align="center">
+          {/* A WORDMARK already says the venue's name, so printing it again beside the artwork reads
+              as a stutter: the first render said "Kalshi KALSHI YES". Kalshi's row therefore shows
+              the mark and the side only. Polymarket ships an ICON, which names nothing on its own,
+              so its row keeps the word. The asymmetry is the venues' own. */}
           <row gap={14} align="center">
-            <media file={V.mark} width={V.wordmark?58:26} fit="width" />
-            <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{S.venue.toUpperCase()+" "+S.side}</text>
+            <media file={V.mark} width={V.wordmark?86:26} fit="width" />
+            <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>{V.wordmark ? S.side : S.venue.toUpperCase()+" "+S.side}</text>
           </row>
           <text fontFamily="JetBrains Mono" fontSize={62} fontWeight={500} color={WHITE}>{S.mp+"%"}</text>
         </row>
