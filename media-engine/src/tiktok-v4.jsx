@@ -42,6 +42,8 @@
 // plus four stills. Needs src/bull.png, src/kalshi.png, src/polymarket.png and the house faces
 // (General Sans 700, Satoshi 500, JetBrains Mono 500) registered in the project.
 import { readFileSync } from "node:fs";
+import { balanceLines } from "./balance-lines.mjs";
+import { readForReel } from "./reel-read.mjs";
 export default async ({ project }) => {
   const S = JSON.parse(readFileSync(process.env.SPEC, "utf8"));
   // Twelve seconds, not ten (Erick, 2 Sep: "gives users 2 more seconds to read and digest"). The two
@@ -67,47 +69,19 @@ export default async ({ project }) => {
   // you i have orphans/tailing where there is a single word or punctuation on its own line, doesn't
   // look good... Rangers is also on its own line... people will easily call this out as AI slop."
   //
-  // He had already told me, and I had already built check-lines.mjs for it, and it still shipped.
-  // The reason is worth writing down: that checker measures STATIC strings and reports how many
-  // nodes "carry computed text and were not measured". Here that count is fifteen, and the market
-  // question is one of them, because it arrives as {S.q} at render time. The guard was clean on
-  // exactly the text that was breaking, which is worse than no guard: it produced confidence.
+  // He had told me before, check-lines.mjs existed to catch it, and it still shipped, because that
+  // checker measures STATIC strings and counted the market question among "15 node(s) carry
+  // computed text and were not measured". It was clean on exactly the text that was breaking.
   //
-  // The deeper cause is the wrap itself. Every renderer fills a line to the budget and starts a new
-  // one, which packs the early lines and dumps the remainder on the last, so a 33-character
-  // question in a 30-character box becomes "Tampa Bay Rays vs. Texas" and then "Rangers?" alone.
-  // Greedy wrapping does not have an orphan bug; orphans are what greedy wrapping IS. So the fix is
-  // to choose the line count first and spread the words evenly across it: a balanced rag.
+  // fit() breaks a string so the last line is never the leftovers, measuring against the real
+  // advance widths of the house faces rather than an assumed average. The first version of this
+  // assumed 0.55 em and General Sans in caps is 0.717, so every line overflowed and the renderer
+  // re-wrapped it into something worse: "POLYMARKET PUTS THE / NO / SIDE AT 45.5 PERCENT,".
   //
-  // This lives inside the composition rather than in the spec writer on purpose. It is the layout's
-  // job, so it holds for every spec, including ones written by hand. It is a copy of
-  // social-assets/lib/pipeline/balance-lines.mjs, which carries the tests.
-  const fit = (t, box, size, mono=false, ls=0) => {
-    const budget = Math.floor(box / (size * (mono ? 0.6 : 0.55) + ls));
-    const words = String(t ?? "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
-    if (words.length < 2) return words.join(" ");
-    const pack = (w) => words.reduce((ls2, word) => {
-      const next = ls2.length ? ls2[ls2.length-1] + " " + word : word;
-      if (ls2.length && next.length <= w) ls2[ls2.length-1] = next; else ls2.push(word);
-      return ls2;
-    }, []);
-    // Binary search the narrowest width that still fits in n lines: that is the balanced rag.
-    const into = (n) => {
-      let lo = Math.max(...words.map((w) => w.length)), hi = budget, best = null;
-      while (lo <= hi) { const mid = (lo+hi)>>1; const r = pack(mid); if (r.length <= n) { best = r; hi = mid-1; } else lo = mid+1; }
-      return best ?? pack(budget);
-    };
-    // Alone on the last line: one short word, or nothing but punctuation.
-    const bad = (l) => l.length > 1 && ((l[l.length-1].split(" ").length === 1 && l[l.length-1].length <= 14) || /^[^\w]+$/.test(l[l.length-1]));
-    let lines = into(pack(budget).length);
-    if (bad(lines)) { const wider = into(pack(budget).length + 1); if (!bad(wider)) lines = wider; }
-    // Last resort: pull a word down from the line above, which always cures a lone-word ending.
-    if (bad(lines) && lines.length >= 2) {
-      const above = lines[lines.length-2].split(" ");
-      if (above.length >= 2) { const moved = above.pop(); lines[lines.length-2] = above.join(" "); lines[lines.length-1] = moved + " " + lines[lines.length-1]; }
-    }
-    return lines.join("\n");
-  };
+  // The modules are imported rather than copied in, because a copy is how the estimate and the
+  // measurement drifted apart in the first place. They carry the tests.
+  const fit = (t, box, size, family = "General Sans", ls = 0) =>
+    balanceLines(t, box, size, { family, letterSpacing: ls }).join("\n");
 
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
@@ -163,6 +137,11 @@ export default async ({ project }) => {
   const SAFE_TOP=200, SAFE_BOT=1580, SAFE_L=130, SAFE_R=950;
   const BAND_MID=(SAFE_TOP+SAFE_BOT)/2;   // 890, against a frame centre of 960
   const M=SAFE_L, CW=SAFE_R-SAFE_L, T1=2.8, T2=5.8, T3=9.2;
+  // The second beat is fitted to the band rather than set at a fixed size: at 60px a long read
+  // ran past the band it was composed for and into the gradient below it. readForReel picks the
+  // largest headline size that still lands inside the band, shedding WHOLE trailing sentences
+  // from the desk's own read when it has to. The card below still carries the read in full.
+  const RD = readForReel(S.read, CW-32, { sizes:[60,56,52,48], maxLines:5 });
 
   // The venue's identity, matching the still card's chip exactly. Kalshi ships a WORDMARK (the
   // glyph and the letters are one asset), so its chip carries the artwork alone; Polymarket ships
@@ -275,9 +254,9 @@ export default async ({ project }) => {
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T2-T1-0.3,value:1},{at:T2-T1-0.02,value:0}]},{property:"offsetX",from:-24,to:0,duration:0.4,easing:"house"}]}>
       {venueChip(30,"vchip-read-inner")}
     </group>,
-    <text x={M+16} y={BAND_MID-150} width={CW-32} fontFamily="General Sans" fontSize={56} fontWeight={700} color={WHITE} lineHeight={1.24} at={T1+0.15} duration={T2-T1-0.15}
+    <text x={M+16} y={BAND_MID-150} width={CW-32} fontFamily="General Sans" fontSize={RD.size} fontWeight={700} color={WHITE} lineHeight={1.3} at={T1+0.15} duration={T2-T1-0.15}
       motion={{by:"word",from:{y:34,opacity:0},overlap:0.6,duration:0.55,easing:"house"}}
-      animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{fit(S.read.replace(/[.!]$/,"").toUpperCase(), CW-32, 56)}</text>,
+      animate={[{property:"opacity",keyframes:[{at:0,value:1},{at:T2-T1-0.15-0.3,value:1},{at:T2-T1-0.15-0.02,value:0}]}]}>{RD.lines.join("\n")}</text>,
 
     // ── Beat 3: the figures ─────────────────────────────────────────────────────────────────────
     // Rebuilt 2 Sep after Erick read the first reels on a phone: "too much numbers and data too
@@ -321,7 +300,7 @@ export default async ({ project }) => {
           <text fontFamily="JetBrains Mono" fontSize={80} fontWeight={500} color={BLUE}>{"+"+S.gap}</text>
         </row>
       </column>
-      <text width={CW-80} fontFamily="Satoshi" fontSize={27} fontWeight={500} color={MUTE} lineHeight={1.35}>{fit(S.yesParty ? "YES = "+S.yesParty+" win." : "Precision reads this side higher than the venue does. The gap is in probability points, not a return.", CW-80, 27)}</text>
+      <text width={CW-80} fontFamily="Satoshi" fontSize={27} fontWeight={500} color={MUTE} lineHeight={1.35}>{fit(S.yesParty ? "YES = "+S.yesParty+" win." : "Precision reads this side higher than the venue does. The gap is in probability points, not a return.", CW-80, 27, "Satoshi")}</text>
     </column>,
 
     // ── Beat 4: the ask ─────────────────────────────────────────────────────────────────────────
@@ -355,7 +334,7 @@ export default async ({ project }) => {
       </row>
     </column>,
     <text x={M} y={BAND_MID+485} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={17} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+1.15} duration={life(T3+1.15)}
-      animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{fit(legal, CW, 20, true, 0)}</text>,
+      animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{fit(legal, CW, 20, "JetBrains Mono", 0)}</text>,
     <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-1.1,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
   ];
   p.compose(nodes,{at:0,dur:D,name:"tiktok-"+S.key});
