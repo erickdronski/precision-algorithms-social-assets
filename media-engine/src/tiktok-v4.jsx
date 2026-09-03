@@ -86,8 +86,7 @@ export default async ({ project }) => {
   // weight of object as the venue chip, because a lockup where one side is a logo and the other is
   // plain text reads as a logo endorsing some text.
   const paChip = (h, key, animate) => (
-    <row key={key} animate={animate} gap={Math.round(h*0.40)} align="center" justify="center" fill={NAVY} radius={Math.round(h*0.62)}
-      stroke={{color:MINT,width:2}}
+    <row key={key} animate={animate} gap={Math.round(h*0.40)} align="center" justify="center" fill={CARD} radius={Math.round(h*0.62)}
       padding={{top:Math.round(h*0.44),bottom:Math.round(h*0.44),left:Math.round(h*0.66),right:Math.round(h*0.72)}}>
       <media file={bull} width={Math.round(h*1.08)} fit="width" />
       <text fontFamily="General Sans" fontSize={Math.round(h*0.94)} fontWeight={700} color={WHITE} letterSpacing={-1}>Precision</text>
@@ -147,7 +146,7 @@ export default async ({ project }) => {
     // The venue chip persists here at the same size and position it held in the bubble's header, so
     // it reads as one continuous object across the cut rather than a new element per beat. That is
     // the difference between a motion graphic and a slideshow.
-    <group name="vchip-read" x={M} y={1176} at={T1} duration={T2-T1}
+    <group name="vchip-read" x={M} y={1176} width={360} height={74} at={T1} duration={T2-T1}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T2-T1-0.3,value:1},{at:T2-T1-0.02,value:0}]},{property:"offsetX",from:-24,to:0,duration:0.4,easing:"house"}]}>
       {venueChip(30,"vchip-read-inner")}
     </group>,
@@ -228,12 +227,12 @@ export default async ({ project }) => {
     </column>,
     <text x={M} y={1660} width={CW} align="center" fontFamily="JetBrains Mono" fontSize={18} fontWeight={500} color={GREY} lineHeight={1.5} at={T3+1.15} duration={life(T3+1.15)}
       animate={[{property:"opacity",from:0,to:1,duration:0.4}]}>{legal}</text>,
-    <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-2.6,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
+    <rect name="loopfade" x={0} y={0} width={W} height={H} fill={NAVY} animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:D-1.1,value:0},{at:D-F,value:1,easing:"smooth"}]}]} />,
   ];
   p.compose(nodes,{at:0,dur:D,name:"tiktok-"+S.key});
   // One still per beat, taken mid-beat so no still lands on a fade. These are the TikTok photo-mode
   // slides and the poster, so they have to be frames a reader would stop on.
   await p.frame(1.9,`renders/pa-tiktok-${S.key}-1.png`); await p.frame(4.2,`renders/pa-tiktok-${S.key}-2.png`);
-  await p.frame(7.4,`renders/pa-tiktok-${S.key}-3.png`); await p.frame(10.8,`renders/pa-tiktok-${S.key}-4.png`);
+  await p.frame(7.4,`renders/pa-tiktok-${S.key}-3.png`); await p.frame(10.2,`renders/pa-tiktok-${S.key}-4.png`);
   await p.render(`renders/pa-tiktok-${S.key}.mp4`);
 };
