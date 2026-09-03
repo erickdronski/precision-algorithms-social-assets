@@ -49,7 +49,18 @@ export default async ({ project }) => {
   // the most (+0.8s) because it carries three numbers and a question, the caps read gains +0.5s, the
   // hook and the CTA gain +0.3 and +0.4. Both networks accept it: TikTok and Instagram Reels have a
   // three-second floor and minutes of ceiling.
-  const W=1080,H=1920,D=12,F=1/30, life=(a)=>D-a;
+  // Fourteen seconds, and the two extra go ENTIRELY to the call to action.
+  //
+  // Erick, 3 September: "Our CTA at the end could have an extra 1-2 seconds as it fades too quickly
+  // as well." The arithmetic is worse than it looks. The CTA opens at T3=9.2 and the loop fade
+  // starts at D-1.1, so at D=12 the last beat was legible for 9.2 to 10.9: one point seven seconds
+  // to read a headline, a URL, a pill, a coverage line and a legal line. Nobody reads that.
+  //
+  // At D=14 the same beat is legible from 9.2 to 12.9, which is 3.7 seconds, and the three beats
+  // before it are untouched: the hook, the read and the figures keep the timings that were already
+  // tested. Both networks take it. TikTok and Reels have a three-second floor and a ceiling in
+  // minutes, and a fourteen-second loop still repeats often enough to hold a scroller.
+  const W=1080,H=1920,D=14,F=1/30, life=(a)=>D-a;
   const p = await project({ dir: ".", size: `${W}x${H}`, fps: 30, background: "#05090D" });
   const plate=await p.add(S.plate), bull=await p.add("src/bull.png");
   const kalshi=await p.add("src/kalshi.png"), poly=await p.add("src/polymarket.png");
@@ -140,6 +151,26 @@ export default async ({ project }) => {
     // question ("which category?") nobody scrolling has. The chip answers the one they do have:
     // is this a real market, on a venue I have heard of? The category survives at the right edge in
     // small mono, which is where a deck line belongs.
+    // THE BADGE: why this post, now.
+    //
+    // Erick, 3 September, on Polymarket's feed: "i like how polymarket includes TRENDING in their
+    // post." It works because it tells a scroller why THIS card and not the next one, and a feed of
+    // undifferentiated cards makes the reader do that sorting themselves, which they will not.
+    //
+    // Ours is earned rather than decorative. reel-badge.mjs derives it from signals the engine
+    // already holds: TRENDING only when trend-scan measured real attention (Wikipedia pageviews,
+    // the Hacker News front page), PRICE MOVED only when the venue's own book moved five points
+    // today, CLOSES SOON only under seventy-two hours. assertBadgeEarned refuses a label the
+    // numbers do not support, because a badge is a claim.
+    //
+    // Paper on navy, not mint and not blue. Mint means the model's estimate and blue means the
+    // measured difference, and those meanings are what make every card readable at a glance. A
+    // decorative pill in either colour buys attention by borrowing from the one system the desk
+    // cannot afford to blur.
+    S.badge ? <row name="badge" x={SAFE_L} y={534} padding={{top:11,bottom:11,left:22,right:22}} fill={WHITE} radius={10} at={0.5} duration={T1-0.5}
+      animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.3,value:1},{at:T1-0.5-0.3,value:1},{at:T1-0.5-0.02,value:0}]},{property:"offsetY",from:14,to:0,duration:0.4,easing:"house"}]}>
+      <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={NAVY}>{S.badge}</text>
+    </row> : null,
     <column name="bubble" x={SAFE_L} y={620} width={CW} radius={28} fill={CARD} at={0.35} duration={T1-0.35}
       animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.35,value:1},{at:T1-0.35-0.3,value:1},{at:T1-0.35-0.02,value:0}]},{property:"offsetY",from:28,to:0,duration:0.5,easing:"house"}]}>
       <row width={W-220} padding={{top:26,bottom:8,left:30,right:34}} justify="space-between" align="center">
