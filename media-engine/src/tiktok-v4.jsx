@@ -102,8 +102,18 @@ export default async ({ project }) => {
   //    the safe band with the whole lower half empty. Content is now centred on the band's own
   //    midline, BAND_MID, so a beat sits in the middle of the readable area rather than at the top
   //    of it. On a phone at arm's length the eye rests at the middle of the screen.
-  const SAFE_TOP=200, SAFE_BOT=1450, SAFE_L=130, SAFE_R=950;
-  const BAND_MID=(SAFE_TOP+SAFE_BOT)/2;   // 825
+  // SAFE_BOT is 1580, not 1450, and the reason is that a reel is met in TWO places.
+  //
+  // FULLSCREEN, the app draws its caption, handle and buttons over the bottom of the frame, which is
+  // what the safe area is for. IN THE FEED, which is where Erick watched it, the whole 1080x1920 is
+  // visible and the caption sits BELOW the video. So a band centred for fullscreen reads as
+  // top-heavy in the feed: content at 43% of the frame with an empty third underneath.
+  //
+  // 1580 clears the bottom 340px, which covers the caption block and the progress bar in fullscreen,
+  // and puts the midline at 890 against a true frame centre of 960. That is within 70px of dead
+  // centre and still safe, which is the honest compromise between the two places this gets watched.
+  const SAFE_TOP=200, SAFE_BOT=1580, SAFE_L=130, SAFE_R=950;
+  const BAND_MID=(SAFE_TOP+SAFE_BOT)/2;   // 890, against a frame centre of 960
   const M=SAFE_L, CW=SAFE_R-SAFE_L, T1=2.8, T2=5.8, T3=9.2;
 
   // The venue's identity, matching the still card's chip exactly. Kalshi ships a WORDMARK (the
