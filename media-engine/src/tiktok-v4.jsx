@@ -71,8 +71,8 @@ export default async ({ project }) => {
 
   // One chip, one scale knob. `h` is the chip's cap height in pixels; everything else is derived so
   // the mark, the type and the padding stay in proportion at any size the layout asks for.
-  const venueChip = (h, key) => (
-    <row key={key} gap={Math.round(h*0.42)} align="center" justify="center" fill={V.fill} radius={Math.round(h*0.62)}
+  const venueChip = (h, key, animate) => (
+    <row key={key} animate={animate} gap={Math.round(h*0.42)} align="center" justify="center" fill={V.fill} radius={Math.round(h*0.62)}
       padding={{top:Math.round(h*0.44),bottom:Math.round(h*0.44),left:Math.round(h*0.68),right:Math.round(h*0.72)}}>
       {V.wordmark
         ? <media file={V.mark} width={Math.round(h*V.ratio)} fit="width" />
@@ -85,8 +85,8 @@ export default async ({ project }) => {
   // Our half of the lockup. Navy slab, mint hairline, the circuit bull and the desk name: the same
   // weight of object as the venue chip, because a lockup where one side is a logo and the other is
   // plain text reads as a logo endorsing some text.
-  const paChip = (h, key) => (
-    <row key={key} gap={Math.round(h*0.40)} align="center" justify="center" fill={NAVY} radius={Math.round(h*0.62)}
+  const paChip = (h, key, animate) => (
+    <row key={key} animate={animate} gap={Math.round(h*0.40)} align="center" justify="center" fill={NAVY} radius={Math.round(h*0.62)}
       stroke={{color:MINT,width:2}}
       padding={{top:Math.round(h*0.44),bottom:Math.round(h*0.44),left:Math.round(h*0.66),right:Math.round(h*0.72)}}>
       <media file={bull} width={Math.round(h*1.08)} fit="width" />
@@ -136,9 +136,9 @@ export default async ({ project }) => {
             the one thing the footer spends four lines denying. */}
         <row width={W-300} gap={20} align="center" justify="center"
           animate={[{property:"opacity",keyframes:[{at:0,value:0},{at:0.9,value:0},{at:1.25,value:1}]}]}>
-          <group animate={[{property:"offsetX",keyframes:[{at:0,value:-40},{at:0.9,value:-40},{at:1.35,value:0,easing:"house"}]}]}>{venueChip(26,"vchip-vs")}</group>
+          {venueChip(26,"vchip-vs",[{property:"offsetX",keyframes:[{at:0,value:-40},{at:0.9,value:-40},{at:1.35,value:0,easing:"house"}]}])}
           <text fontFamily="JetBrains Mono" fontSize={24} fontWeight={500} letterSpacing={3} color={GREY}>VS</text>
-          <group animate={[{property:"offsetX",keyframes:[{at:0,value:40},{at:0.9,value:40},{at:1.35,value:0,easing:"house"}]}]}>{paChip(26,"pachip-vs")}</group>
+          {paChip(26,"pachip-vs",[{property:"offsetX",keyframes:[{at:0,value:40},{at:0.9,value:40},{at:1.35,value:0,easing:"house"}]}])}
         </row>
       </column>
     </column>,
