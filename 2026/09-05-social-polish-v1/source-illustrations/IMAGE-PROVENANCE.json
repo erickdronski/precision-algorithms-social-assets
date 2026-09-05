@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "file": "assets/compare.png",
+      "sha256": "b4ee1a9a417a756660884772b4829c3efcb6436653c78843046cb08dedf48464",
+      "provider": "OpenAI native image generation tool",
+      "generatedOn": "2026-09-05",
+      "originFile": "exec-11915f89-e045-45ed-8bc7-a404c269f9d5.png",
+      "promptBriefSummary": "Unmarked brushed-steel measuring caliper, physical editorial still life. Text-free and face-free; generous dark composition space; tactile materials, restrained neutral light; no symbols, numbers, logo or fake market dashboard.",
+      "promptRecordType": "brief summary, not a verbatim tool prompt",
+      "intendedUse": "Illustrative teaching hero, never documentary news evidence",
+      "composition": "House renderer adds deterministic text, logo and native crops."
+    },
+    {
+      "file": "assets/rules.png",
+      "sha256": "dd23ad6375c5e0c1c841bbe00df679ce0e85438a145c67b7877e664b69efa43b",
+      "provider": "OpenAI native image generation tool",
+      "generatedOn": "2026-09-05",
+      "originFile": "exec-f62293da-3bdb-44dc-b782-9c69fdcca602.png",
+      "promptBriefSummary": "Blank archival paper with an optical magnifier, physical editorial still life. Text-free and face-free; generous dark composition space; tactile materials, restrained neutral light; no symbols, numbers, logo or fake market dashboard.",
+      "promptRecordType": "brief summary, not a verbatim tool prompt",
+      "intendedUse": "Illustrative teaching hero, never documentary news evidence",
+      "composition": "House renderer adds deterministic text, logo and native crops."
+    }
+  ]
+}
