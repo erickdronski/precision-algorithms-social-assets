@@ -1,33 +1,33 @@
 # Precision Algorithms social assets
 
-Public host for rendered social creative.
+Rendered social creative for [Precision Algorithms](https://precisionalgorithms.com).
+This repository provides stable public image URLs for scheduled social posts.
 
-This repository exists for one reason: Buffer's API has no media upload endpoint. Every asset
-attached to a post must be referenced by a publicly fetchable URL, so the images have to live
-somewhere public before they can be scheduled.
+For the product, visit [precisionalgorithms.com](https://precisionalgorithms.com).
+For other projects and professional background, visit
+[Erick Dronski's GitHub profile](https://github.com/erickdronski).
 
-Everything here is already destined for a public social feed. Nothing is published to this
-repository that is not being posted anyway.
+## Repository scope
 
-## What this is not
+This is an asset distribution repository. It contains rendered images organized
+by publication date and campaign. The rendering tools, source records, captions,
+and quality reviews are maintained separately.
 
-Not the content engine. The engine is private and lives in
-`erickdronski/precision-algorithms-content-engine`, which is where the renderers, source records,
-QA receipts and captions are. This repository holds output only, and nothing here is a source of
-truth. If a file here disagrees with the engine, the engine is right.
+Each image reflects the information available when it was created. Published
+creative should not be treated as a current data feed or source record.
 
-## Layout
+## Browse the assets
 
-    <year>/<month-day>-<campaign>/<platform>-<width>x<height>.png
+Campaign folders live under [`2026/`](2026/). Filenames identify the campaign or
+subject and target platform; naming conventions vary across campaigns.
 
-## URLs
+To reference an existing asset, use its exact committed path:
 
-    https://raw.githubusercontent.com/erickdronski/precision-algorithms-social-assets/main/<path>
-
-Once a post is published, the network re-hosts the image on its own CDN, so these URLs are only
-read by Buffer at scheduling time. They are not what an audience sees.
+```text
+https://raw.githubusercontent.com/erickdronski/precision-algorithms-social-assets/main/<path>
+```
 
 ## Retention
 
-Assets stay after publication. A live post can be re-fetched by the network, and deleting the
-source can break it.
+Keep published asset paths stable. Scheduling tools and historical references
+may still depend on them after publication. New creative should use a new path.
