@@ -4,8 +4,7 @@ Rendered social creative for [Precision Algorithms](https://precisionalgorithms.
 This repository provides stable public image URLs for scheduled social posts.
 
 For the product, visit [precisionalgorithms.com](https://precisionalgorithms.com).
-For other projects and professional background, visit
-[Erick Dronski's GitHub profile](https://github.com/erickdronski).
+Related projects are in the [Precision Algorithms organization](https://github.com/precisionalgorithms).
 
 ## Repository scope
 
@@ -36,7 +35,7 @@ approval to publish their historical figures again.
 To reference an existing asset, use its exact committed path:
 
 ```text
-https://raw.githubusercontent.com/erickdronski/precision-algorithms-social-assets/main/<path>
+https://raw.githubusercontent.com/precisionalgorithms/precision-algorithms-social-assets/main/<path>
 ```
 
 ## Attribution and reuse
